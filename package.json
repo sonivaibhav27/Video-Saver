@@ -1,0 +1,61 @@
+{
+  "name": "Vidown",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "clean": "cd android && gradlew clean && cd ..",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint .",
+    "release": "react-native run-android --variant=release",
+    "restart": "adb reverse tcp:8081 tcp:8081",
+    "update": "appcenter codepush release-react -a vidowndownload-gmail.com/Vidown -m -d Production  --target-binary-version \"6.4.1-release\" --description \"Instagram video error in some mobiles \""
+  },
+  "dependencies": {
+    "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-community/cameraroll": "^4.0.1",
+    "@react-native-community/clipboard": "^1.5.1",
+    "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-community/slider": "^3.0.3",
+    "@react-native-firebase/admob": "11.5.0",
+    "@react-native-firebase/app": "11.5.0",
+    "@react-navigation/native": "^5.8.10",
+    "@react-navigation/stack": "^5.12.8",
+    "cheerio": "^1.0.0-rc.5",
+    "react": "16.13.1",
+    "react-native": "0.63.4",
+    "react-native-code-push": "^6.4.0",
+    "react-native-cookie": "^0.3.0",
+    "react-native-gesture-handler": "^1.9.0",
+    "react-native-linear-gradient": "^2.5.6",
+    "react-native-onesignal": "^3.9.3",
+    "react-native-reanimated": "^1.13.2",
+    "react-native-safe-area-context": "^3.1.9",
+    "react-native-screens": "^2.15.0",
+    "react-native-share": "^5.1.0",
+    "react-native-vector-icons": "^7.1.0",
+    "react-native-video": "^5.1.1",
+    "react-native-webview": "^11.0.1",
+    "rn-fetch-blob": "^0.12.0",
+    "rollbar-react-native": "^0.9.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/runtime": "^7.8.4",
+    "@react-native-community/eslint-config": "^1.1.0",
+    "babel-jest": "^25.1.0",
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "eslint": "^6.5.1",
+    "hermes-engine": "0.5.1",
+    "jest": "^25.1.0",
+    "metro-react-native-babel-preset": "^0.59.0",
+    "react-devtools": "<4.11.0",
+    "react-native-bundle-visualizer": "^2.2.1",
+    "react-test-renderer": "16.13.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
