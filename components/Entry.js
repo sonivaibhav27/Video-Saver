@@ -47,7 +47,8 @@ export default function App({ navigation }) {
   }, []);
   const showRewardAlertCallback = async () => {
     if (!showRewardAlert) {
-      await AdsConsent.requestInfoUpdate(["455-202-3931"]);
+      await AdsConsent.addTestDevices(["350385911634245"]);
+      await AdsConsent.requestInfoUpdate(["pub-8999959423597689"]);
       const formResult = await AdsConsent.showForm({
         privacyPolicy: "https://invertase.io/privacy-policy",
         withPersonalizedAds: true,
@@ -79,9 +80,9 @@ export default function App({ navigation }) {
 
       <View style={styles.flex}>
         <View style={styles.iconContainer}>
-          <InstagramIcon navigation={navigation} text="Instagram" />
+          <InstagramIcon navigation={navigation} text='Instagram' />
           <IconDisplay
-            backgroundColor="#4267B2"
+            backgroundColor='#4267B2'
             onPress={() => {
               navigation.navigate("Detail", {
                 platform: "fb",
@@ -89,11 +90,11 @@ export default function App({ navigation }) {
               });
             }}
             isfb
-            name="facebook-f"
-            text="Facebook"
+            name='facebook-f'
+            text='Facebook'
           />
           <IconDisplay
-            backgroundColor="#1DA1F2"
+            backgroundColor='#1DA1F2'
             onPress={() => {
               navigation.navigate("Detail", {
                 name: "twitter",
@@ -101,32 +102,32 @@ export default function App({ navigation }) {
               });
             }}
             isTw
-            name="twitter"
-            text="Twitter"
+            name='twitter'
+            text='Twitter'
           />
           <IconDisplay
             onPress={() => {
               navigation.navigate("whatsapp");
             }}
             isWp
-            name="whatsapp"
-            backgroundColor="#075e54"
-            text="Whatsapp"
+            name='whatsapp'
+            backgroundColor='#075e54'
+            text='Whatsapp'
           />
           <ImageIcon
             onPress={() => {
               navigation.navigate("pin");
             }}
-            backgroundColor="#fe3534"
-            text="Pinterest"
+            backgroundColor='#fe3534'
+            text='Pinterest'
           />
           <ImageIcon
             onPress={() => {
               navigation.navigate("vimeo");
             }}
             isVimeo
-            backgroundColor="#00adef"
-            text="Vimeo"
+            backgroundColor='#00adef'
+            text='Vimeo'
           />
         </View>
         <View style={styles.infoContainer}>
@@ -152,7 +153,7 @@ export default function App({ navigation }) {
           unitId={BannerID}
           onAdFailedToLoad={() => {}}
           size={AD_SIZE.SMART_BANNER}
-          key="Banner Ads"
+          key='Banner Ads'
         />
       </View>
       {showRewardAlert ? (
