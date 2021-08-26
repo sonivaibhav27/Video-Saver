@@ -19,6 +19,7 @@ import Settings from "./Setting/Settings";
 import {
   AdsConsent,
   AdsConsentDebugGeography,
+  AdsConsentStatus,
   BannerAd,
 } from "@react-native-firebase/admob";
 import { AD_SIZE, BannerID } from "./RemoveAds/InitializeAd";
@@ -27,13 +28,28 @@ import RewardAlert from "./RewardAlert";
 AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
 export default function App({ navigation }) {
   const [showRewardAlert, setShowRewardAlert] = React.useState(false);
+  const contestRef = React.useRef();
   const [adLoaded, setAdLoaded] = React.useState(false);
   const [loadAd, showAd, rewardAdEventHandler] = useRewardAdsHook();
   const navigateToDownload = () => {
     navigation.navigate("Downloads");
   };
+  const checkForAdsContest = async () => {
+    const consentInfo = await AdsConsent.requestInfoUpdate([
+      "pub-8999959423597689",
+    ]);
+    await AdsConsent.setDebugGeography(AdsConsentDebugGeography.DISABLED);
+    const result = await AdsConsent.setDebugGeography(
+      AdsConsentDebugGeography.EEA
+    );
+    alert(result);
+    console.log(consentInfo);
+
+    contestRef.current = consentInfo;
+  };
 
   React.useEffect(() => {
+    checkForAdsContest();
     const event = rewardAdEventHandler(
       () => {
         setAdLoaded(true);
@@ -47,14 +63,19 @@ export default function App({ navigation }) {
   }, []);
   const showRewardAlertCallback = async () => {
     if (!showRewardAlert) {
-      await AdsConsent.addTestDevices(["350385911634245"]);
-      await AdsConsent.requestInfoUpdate(["pub-8999959423597689"]);
-      const formResult = await AdsConsent.showForm({
-        privacyPolicy: "https://invertase.io/privacy-policy",
-        withPersonalizedAds: true,
-        withNonPersonalizedAds: true,
-        withAdFree: true,
-      });
+      if (
+        contestRef?.current?.isRequestLocationInEeaOrUnknown &&
+        contestRef?.current?.AdsConsentStatus.UNKNOWN
+      ) {
+        const getUserStatus = await AdsConsent.getStatus();
+        if (getUserStatus === AdsConsentStatus.UNKNOWN) {
+          const formResult = await AdsConsent.showForm({
+            privacyPolicy: "https://invertase.io/privacy-policy",
+            withPersonalizedAds: true,
+            withNonPersonalizedAds: true,
+          });
+        }
+      }
       loadAd();
     }
     setShowRewardAlert(!showRewardAlert);
@@ -80,9 +101,9 @@ export default function App({ navigation }) {
 
       <View style={styles.flex}>
         <View style={styles.iconContainer}>
-          <InstagramIcon navigation={navigation} text='Instagram' />
+          <InstagramIcon navigation={navigation} text="Instagram" />
           <IconDisplay
-            backgroundColor='#4267B2'
+            backgroundColor="#4267B2"
             onPress={() => {
               navigation.navigate("Detail", {
                 platform: "fb",
@@ -90,11 +111,11 @@ export default function App({ navigation }) {
               });
             }}
             isfb
-            name='facebook-f'
-            text='Facebook'
+            name="facebook-f"
+            text="Facebook"
           />
           <IconDisplay
-            backgroundColor='#1DA1F2'
+            backgroundColor="#1DA1F2"
             onPress={() => {
               navigation.navigate("Detail", {
                 name: "twitter",
@@ -102,32 +123,32 @@ export default function App({ navigation }) {
               });
             }}
             isTw
-            name='twitter'
-            text='Twitter'
+            name="twitter"
+            text="Twitter"
           />
           <IconDisplay
             onPress={() => {
               navigation.navigate("whatsapp");
             }}
             isWp
-            name='whatsapp'
-            backgroundColor='#075e54'
-            text='Whatsapp'
+            name="whatsapp"
+            backgroundColor="#075e54"
+            text="Whatsapp"
           />
           <ImageIcon
             onPress={() => {
               navigation.navigate("pin");
             }}
-            backgroundColor='#fe3534'
-            text='Pinterest'
+            backgroundColor="#fe3534"
+            text="Pinterest"
           />
           <ImageIcon
             onPress={() => {
               navigation.navigate("vimeo");
             }}
             isVimeo
-            backgroundColor='#00adef'
-            text='Vimeo'
+            backgroundColor="#00adef"
+            text="Vimeo"
           />
         </View>
         <View style={styles.infoContainer}>
@@ -153,7 +174,7 @@ export default function App({ navigation }) {
           unitId={BannerID}
           onAdFailedToLoad={() => {}}
           size={AD_SIZE.SMART_BANNER}
-          key='Banner Ads'
+          key="Banner Ads"
         />
       </View>
       {showRewardAlert ? (
