@@ -57,5 +57,8 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "resolutions": {
+    "electron": "^11.0.1"
   }
 }

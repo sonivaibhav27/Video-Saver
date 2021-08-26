@@ -1,7 +1,13 @@
 // CHECKED.
 
 import * as React from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ToastAndroid,
+} from "react-native";
 import HeaderTitle from "./HeaderTitle/index";
 import {
   IconDisplay,
@@ -10,16 +16,66 @@ import {
 } from "./SocialMedia/LogoIcons/index";
 import Settings from "./Setting/Settings";
 
-import { BannerAd } from "@react-native-firebase/admob";
+import {
+  AdsConsent,
+  AdsConsentDebugGeography,
+  BannerAd,
+} from "@react-native-firebase/admob";
 import { AD_SIZE, BannerID } from "./RemoveAds/InitializeAd";
-
+import useRewardAdsHook from "./RewardAds";
+import RewardAlert from "./RewardAlert";
+AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
 export default function App({ navigation }) {
+  const [showRewardAlert, setShowRewardAlert] = React.useState(false);
+  const [adLoaded, setAdLoaded] = React.useState(false);
+  const [loadAd, showAd, rewardAdEventHandler] = useRewardAdsHook();
   const navigateToDownload = () => {
     navigation.navigate("Downloads");
   };
+
+  React.useEffect(() => {
+    const event = rewardAdEventHandler(
+      () => {
+        setAdLoaded(true);
+      },
+      () => {
+        setAdLoaded(false);
+        setShowRewardAlert(false);
+      }
+    );
+    return event;
+  }, []);
+  const showRewardAlertCallback = async () => {
+    if (!showRewardAlert) {
+      await AdsConsent.requestInfoUpdate(["455-202-3931"]);
+      const formResult = await AdsConsent.showForm({
+        privacyPolicy: "https://invertase.io/privacy-policy",
+        withPersonalizedAds: true,
+        withNonPersonalizedAds: true,
+        withAdFree: true,
+      });
+      loadAd();
+    }
+    setShowRewardAlert(!showRewardAlert);
+  };
+
+  const showAdHelper = () => {
+    try {
+      showAd();
+    } catch (err) {
+      ToastAndroid.showWithGravityAndOffset(
+        "Can't load ad now.Please try again",
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+        0,
+        20
+      );
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <HeaderTitle />
+      <HeaderTitle {...{ showRewardAlertCallback }} />
 
       <View style={styles.flex}>
         <View style={styles.iconContainer}>
@@ -99,6 +155,13 @@ export default function App({ navigation }) {
           key="Banner Ads"
         />
       </View>
+      {showRewardAlert ? (
+        <RewardAlert
+          loading={adLoaded}
+          showAdCallback={showAdHelper}
+          close={showRewardAlertCallback}
+        />
+      ) : null}
     </View>
   );
 }
