@@ -24,8 +24,7 @@ import {
 import useRewardAdsHook from "./RewardAds";
 import RewardAlert from "./RewardAlert";
 import ActivityIndicator from "./ActivityIndicator";
-// await AdsConsent.addTestDevices(["3F44BA187AF662C093736ABFE3CD1D46"]);
-// await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
+
 export default function App({ navigation }) {
   const [showRewardAlert, setShowRewardAlert] = React.useState(false);
   const contestRef = React.useRef();
@@ -42,6 +41,9 @@ export default function App({ navigation }) {
     navigation.navigate("Downloads");
   };
   const checkForAdsContest = async () => {
+    // await AdsConsent.addTestDevices(["3F44BA187AF662C093736ABFE3CD1D46"]);
+    await AdsConsent.addTestDevices(["05ADAA36163BF09902D81CCEC9FA322C"]);
+    await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
     const consentInfo = await AdsConsent.requestInfoUpdate([
       "pub-2540765935808056",
     ]);
@@ -128,9 +130,9 @@ export default function App({ navigation }) {
 
       <View style={styles.flex}>
         <View style={styles.iconContainer}>
-          <InstagramIcon navigation={navigation} text="Instagram" />
+          <InstagramIcon navigation={navigation} text='Instagram' />
           <IconDisplay
-            backgroundColor="#4267B2"
+            backgroundColor='#4267B2'
             onPress={() => {
               navigation.navigate("Detail", {
                 platform: "fb",
@@ -138,11 +140,11 @@ export default function App({ navigation }) {
               });
             }}
             isfb
-            name="facebook-f"
-            text="Facebook"
+            name='facebook-f'
+            text='Facebook'
           />
           <IconDisplay
-            backgroundColor="#1DA1F2"
+            backgroundColor='#1DA1F2'
             onPress={() => {
               navigation.navigate("Detail", {
                 name: "twitter",
@@ -150,32 +152,32 @@ export default function App({ navigation }) {
               });
             }}
             isTw
-            name="twitter"
-            text="Twitter"
+            name='twitter'
+            text='Twitter'
           />
           <IconDisplay
             onPress={() => {
               navigation.navigate("whatsapp");
             }}
             isWp
-            name="whatsapp"
-            backgroundColor="#075e54"
-            text="Whatsapp"
+            name='whatsapp'
+            backgroundColor='#075e54'
+            text='Whatsapp'
           />
           <ImageIcon
             onPress={() => {
               navigation.navigate("pin");
             }}
-            backgroundColor="#fe3534"
-            text="Pinterest"
+            backgroundColor='#fe3534'
+            text='Pinterest'
           />
           <ImageIcon
             onPress={() => {
               navigation.navigate("vimeo");
             }}
             isVimeo
-            backgroundColor="#00adef"
-            text="Vimeo"
+            backgroundColor='#00adef'
+            text='Vimeo'
           />
         </View>
         <View style={styles.infoContainer}>
