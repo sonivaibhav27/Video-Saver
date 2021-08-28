@@ -15,8 +15,6 @@ import { getMediaType } from "../Whatsapp/Constants";
 import { PermissionChecking } from "../Context";
 import WhatsappSection from "./WhatsappSection";
 import Toast from "../Toast";
-import { BannerAd } from "@react-native-firebase/admob";
-import { AD_SIZE, BannerID } from "../RemoveAds/InitializeAd";
 const { height } = Dimensions.get("window");
 
 export default function App({}) {
@@ -83,7 +81,7 @@ export default function App({}) {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator text='Loading...' />
+        <ActivityIndicator text="Loading..." />
       </View>
     );
   }
@@ -113,15 +111,9 @@ export default function App({}) {
       )}
       {share && (
         <View style={styles.positionAbsolute}>
-          <ActivityIndicator text='loading...' />
+          <ActivityIndicator text="loading..." />
         </View>
       )}
-      <BannerAd
-        key='Banner Ad'
-        onAdFailedToLoad={() => {}}
-        size={AD_SIZE.SMART_BANNER}
-        unitId={BannerID}
-      />
     </View>
   );
 }

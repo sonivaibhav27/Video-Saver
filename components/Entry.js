@@ -20,29 +20,31 @@ import {
   AdsConsent,
   AdsConsentDebugGeography,
   AdsConsentStatus,
-  BannerAd,
 } from "@react-native-firebase/admob";
-import { AD_SIZE, BannerID } from "./RemoveAds/InitializeAd";
 import useRewardAdsHook from "./RewardAds";
 import RewardAlert from "./RewardAlert";
-AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
+import ActivityIndicator from "./ActivityIndicator";
+// await AdsConsent.addTestDevices(["3F44BA187AF662C093736ABFE3CD1D46"]);
+// await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
 export default function App({ navigation }) {
   const [showRewardAlert, setShowRewardAlert] = React.useState(false);
   const contestRef = React.useRef();
   const [adLoaded, setAdLoaded] = React.useState(false);
-  const [loadAd, showAd, rewardAdEventHandler] = useRewardAdsHook();
+  const [adConsentLoading, setAdconsentLoading] = React.useState(false);
+  const [
+    loadAd,
+    showAd,
+    rewardAdEventHandler,
+    rewardedModifiedForEEA,
+    rewardedRef,
+  ] = useRewardAdsHook();
   const navigateToDownload = () => {
     navigation.navigate("Downloads");
   };
   const checkForAdsContest = async () => {
     const consentInfo = await AdsConsent.requestInfoUpdate([
-      "pub-8999959423597689",
+      "pub-2540765935808056",
     ]);
-    await AdsConsent.setDebugGeography(AdsConsentDebugGeography.DISABLED);
-    const result = await AdsConsent.setDebugGeography(
-      AdsConsentDebugGeography.EEA
-    );
-    alert(result);
     console.log(consentInfo);
 
     contestRef.current = consentInfo;
@@ -60,23 +62,47 @@ export default function App({ navigation }) {
       }
     );
     return event;
-  }, []);
+  }, [rewardedRef]);
   const showRewardAlertCallback = async () => {
     if (!showRewardAlert) {
-      if (
-        contestRef?.current?.isRequestLocationInEeaOrUnknown &&
-        contestRef?.current?.AdsConsentStatus.UNKNOWN
-      ) {
-        const getUserStatus = await AdsConsent.getStatus();
-        if (getUserStatus === AdsConsentStatus.UNKNOWN) {
-          const formResult = await AdsConsent.showForm({
-            privacyPolicy: "https://invertase.io/privacy-policy",
-            withPersonalizedAds: true,
-            withNonPersonalizedAds: true,
-          });
+      if (contestRef?.current?.isRequestLocationInEeaOrUnknown) {
+        try {
+          const getUserStatus = await AdsConsent.getStatus();
+          if (getUserStatus === AdsConsentStatus.UNKNOWN) {
+            setAdconsentLoading(true);
+            const formResult = await AdsConsent.showForm({
+              privacyPolicy: "https://invertase.io/privacy-policy",
+              withPersonalizedAds: true,
+              withNonPersonalizedAds: true,
+            });
+            setAdconsentLoading(false);
+            if (
+              formResult.status == AdsConsentStatus.PERSONALIZED ||
+              formResult.status === AdsConsentStatus.NON_PERSONALIZED
+            ) {
+              rewardedModifiedForEEA(formResult.status);
+              loadAd();
+            } else {
+              return;
+            }
+          } else {
+            rewardedModifiedForEEA(getUserStatus);
+            loadAd();
+          }
+        } catch (err) {
+          console.log(err);
+          ToastAndroid.showWithGravityAndOffset(
+            "Something went failed.",
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+            0,
+            20
+          );
+          return;
         }
+      } else {
+        loadAd();
       }
-      loadAd();
     }
     setShowRewardAlert(!showRewardAlert);
   };
@@ -85,6 +111,7 @@ export default function App({ navigation }) {
     try {
       showAd();
     } catch (err) {
+      alert(err);
       ToastAndroid.showWithGravityAndOffset(
         "Can't load ad now.Please try again",
         ToastAndroid.SHORT,
@@ -169,14 +196,7 @@ export default function App({ navigation }) {
           Version:Test Version 1.0
         </Text> */}
       </View>
-      <View>
-        <BannerAd
-          unitId={BannerID}
-          onAdFailedToLoad={() => {}}
-          size={AD_SIZE.SMART_BANNER}
-          key="Banner Ads"
-        />
-      </View>
+
       {showRewardAlert ? (
         <RewardAlert
           loading={adLoaded}
@@ -184,6 +204,9 @@ export default function App({ navigation }) {
           close={showRewardAlertCallback}
         />
       ) : null}
+      {adConsentLoading && (
+        <ActivityIndicator text={`loading ad consent \nPlease wait...`} />
+      )}
     </View>
   );
 }
