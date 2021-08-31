@@ -18,7 +18,7 @@ export default (twitterURL) => {
           err:
             "Can't able to fetch results,Please check your internet connection.",
         });
-      }, 8000);
+      }, 15000);
       fetch(start + id + end, {
         headers: {
           Authorization: token,

@@ -24,8 +24,7 @@ import {
 import useRewardAdsHook from "./RewardAds";
 import RewardAlert from "./RewardAlert";
 import ActivityIndicator from "./ActivityIndicator";
-// await AdsConsent.addTestDevices(["3F44BA187AF662C093736ABFE3CD1D46"]);
-// await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
+
 export default function App({ navigation }) {
   const [showRewardAlert, setShowRewardAlert] = React.useState(false);
   const contestRef = React.useRef();
@@ -42,11 +41,13 @@ export default function App({ navigation }) {
     navigation.navigate("Downloads");
   };
   const checkForAdsContest = async () => {
+    // await AdsConsent.addTestDevices(["3F44BA187AF662C093736ABFE3CD1D46"]);
+    //Production emulator
+    // await AdsConsent.addTestDevices(["0582F08BCC86D7B2E3B50E1B53A98478"]);
+    // await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
     const consentInfo = await AdsConsent.requestInfoUpdate([
       "pub-2540765935808056",
     ]);
-    console.log(consentInfo);
-
     contestRef.current = consentInfo;
   };
 

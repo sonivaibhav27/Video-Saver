@@ -1,4 +1,5 @@
 import cheerio from "cheerio";
+import { ToastAndroid } from "react-native";
 
 const header = {
   headers: {
@@ -89,12 +90,19 @@ export default (url: string) => {
           err:
             "Can't able to fetch results, Please check your internet connection.",
         });
-      }, 20000);
+      }, 40000);
 
       getResult(retry, timeout);
       const retry = setTimeout(() => {
+        ToastAndroid.showWithGravityAndOffset(
+          "detected slow internet, trying again...",
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+          0,
+          20
+        );
         getResult(retry, timeout);
-      }, 10000);
+      }, 20000);
     } else {
       reject({
         err: "Link is Invalid,Link should look like these  https://pin.it/ ",

@@ -107,11 +107,10 @@ export default function downloadFb(url) {
           err:
             "Can't able to fetch results,Please check your internet connection.",
         });
-      }, 20000);
+      }, 40000);
       const retry = setTimeout(() => {
         getResult(retry, timeout);
-      }, 10000);
-
+      }, 20000);
       getResult(retry, timeout);
     } else {
       reject({
