@@ -72,7 +72,7 @@ export default function App({ navigation }) {
           if (getUserStatus === AdsConsentStatus.UNKNOWN) {
             setAdconsentLoading(true);
             const formResult = await AdsConsent.showForm({
-              privacyPolicy: "https://invertase.io/privacy-policy",
+              privacyPolicy: "https://ranuja-apps.github.io/",
               withPersonalizedAds: true,
               withNonPersonalizedAds: true,
             });
