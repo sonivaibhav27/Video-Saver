@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "release": "react-native run-android --variant=release",
     "restart": "adb reverse tcp:8081 tcp:8081",
-    "update": "appcenter codepush release-react -a vidowndownload-gmail.com/Vidown -m -d Production  --target-binary-version \"6.4.1-release\" --description \"Instagram video error in some mobiles \""
+    "update": "appcenter codepush release-react -a vidowndownload-gmail.com/Vidown -m -d Production  --target-binary-version \"6.4.3-dev\" --description \"Instagram video error in some mobiles \""
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
