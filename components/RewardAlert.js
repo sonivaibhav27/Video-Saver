@@ -17,7 +17,7 @@ const RewardAlert = ({ close, loading, showAdCallback }) => {
         style={styles.crossContainer}
         onPress={close}
       >
-        <Entypo name="cross" size={20} color="#fff" />
+        <Entypo name='cross' size={20} color='#fff' />
       </TouchableOpacity>
       <View style={styles.subContainer}>
         <View>
@@ -39,7 +39,7 @@ const RewardAlert = ({ close, loading, showAdCallback }) => {
           style={styles.btnContainer}
         >
           {!loading ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size='small' color='#fff' />
           ) : (
             <Text style={styles.btnText}>Watch ad to help us😇</Text>
           )}
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   crossContainer: {
     position: "absolute",
     bottom: 60,
-    left: width / 2 - 10,
+    left: width / 2 - 25,
     backgroundColor: "#111",
     width: 50,
     height: 50,

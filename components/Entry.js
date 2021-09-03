@@ -45,6 +45,8 @@ export default function App({ navigation }) {
     //Production emulator
     // await AdsConsent.addTestDevices(["0582F08BCC86D7B2E3B50E1B53A98478"]);
     // await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
+    await AdsConsent.addTestDevices(["05ADAA36163BF09902D81CCEC9FA322C"]);
+    await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
     const consentInfo = await AdsConsent.requestInfoUpdate([
       "pub-2540765935808056",
     ]);

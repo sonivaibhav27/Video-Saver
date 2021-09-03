@@ -21,6 +21,7 @@ const useRewardAdsHook = () => {
   const eventHandler = React.useCallback(
     (setLoadCallback, afterWatchCallback) => {
       const event = rewarded.onAdEvent((type, error) => {
+        alert(type);
         if (error) {
           console.log(error);
           ToastAndroid.showWithGravityAndOffset(
