@@ -1,3 +1,5 @@
+import { getCookie } from "../components/Cookie";
+import cheerio from "cheerio";
 import urlVerifier from "./CheckUrl";
 const uagents = [
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.47 Safari/537.36",
@@ -22,15 +24,59 @@ function RejectError(reject, err) {
   }
 }
 
+const checkForPossibleVideoSite = (html) => {
+  const possibles = [
+    '<meta property="og:video:url"',
+    '<meta property="og:video:secure_url"',
+    "sd_src_no_ratelimit",
+    "sd_src",
+  ];
+  for (let i = 0; i < possibles.length; i++) {
+    if (i == 2 || i == 3) {
+      const regex = new RegExp(`${possibles[i]}:"(.+?)"`);
+      const exists = html.match(regex);
+      console.log({ exists });
+      if (exists != null) {
+        return exists[1].replace(/&amp;/g, "&");
+      }
+    } else {
+      const regex = new RegExp(`${possibles[i]} content="(.+?)"`);
+      const exists = html.match(regex);
+      console.log({ exists });
+      if (exists != null) {
+        return exists[1].replace(/&amp;/g, "&");
+      }
+    }
+  }
+  return -1;
+};
+
 export default function downloadFb(url) {
-  return new Promise((resolve, reject) => {
+  // getDataFromURI();
+  return new Promise(async (resolve, reject) => {
+    const result = await getCookie("facebook");
+    // alert(JSON.stringify(result));
     const getResult = (retryTimeout, timeout) => {
       fetch(url, {
         redirect: "follow",
         headers: {
-          "Cache-Control": "no-store,no-cache",
           "User-Agent": uagents[0],
+          accept: "*/*",
+          "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+          "sec-ch-ua":
+            '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": '"macOS"',
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "cross-site",
         },
+        referrer: "https://www.facebook.com/",
+        referrerPolicy: "strict-origin-when-cross-origin",
+        body: null,
+        method: "GET",
+        mode: "cors",
+        credentials: "omit",
       })
         .then((response) => {
           if (response.url.indexOf("login/?next=") != -1) {
@@ -68,29 +114,16 @@ export default function downloadFb(url) {
           return response.text();
         })
         .then(async (html) => {
-          const startIndex = html.indexOf('<meta property="og:video:url"');
-
-          if (startIndex == -1) {
+          const downloadUrl = checkForPossibleVideoSite(html);
+          if (downloadUrl == -1) {
             reject({
               err:
                 "This video is private, can't be downloaded without logged in.",
               code: 400,
             });
           }
-          const lastIndex = html.indexOf("/>", startIndex);
-
-          const d = html.substring(startIndex + 39, lastIndex - 2);
-          if (d.replace(/&amp;/g, "&").indexOf("<!DOCTYPE html") != -1) {
-            console.log("[INSIDE]");
-
-            reject({
-              err: "You must be logged in to download this video.",
-              code: 400,
-            });
-          }
-          resolve({ url: d.replace(/&amp;/g, "&").trim() });
-
-          // resolve({ url: html.substring(startIndex + 34, lastIndex - 1) });
+          console.log(downloadUrl);
+          resolve({ url: downloadUrl });
         })
         .catch((err) => {
           clearTimeout(retryTimeout);

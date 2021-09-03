@@ -106,7 +106,7 @@ class Instagram extends Component {
               }}
               hitSlop={{ top: 5, left: 5, right: 5, bottom: 5 }}
             >
-              <AntDesign name='logout' size={20} color='#333' />
+              <AntDesign name="logout" size={20} color="#333" />
               <Text style={{ marginLeft: 2 }}>Logout</Text>
             </TouchableOpacity>
           ),
@@ -182,7 +182,6 @@ class Instagram extends Component {
             "Cache-Control": "no-store,no-cache",
             "User-Agent": userAgent,
           },
-          credentials: "omit",
         })
           .then((data) => {
             return data.json();
@@ -366,7 +365,7 @@ class Instagram extends Component {
                       ]}
                     >
                       {this.state.isDataArrive ? (
-                        <ActivityIndicator size='small' color='#fff' />
+                        <ActivityIndicator size="small" color="#fff" />
                       ) : (
                         <Text style={{ fontSize: 18, color: "#f1f1f1" }}>
                           Get Link
@@ -400,7 +399,7 @@ class Instagram extends Component {
                         Fetched
                       </Text>
                       <AntDesign
-                        name='checkcircle'
+                        name="checkcircle"
                         style={{ marginLeft: 10 }}
                         size={20}
                         color={"#fff"}
@@ -439,7 +438,7 @@ class Instagram extends Component {
                         },
                       ]}
                     >
-                      <AntDesign name='instagram' size={30} color='#000' />
+                      <AntDesign name="instagram" size={30} color="#000" />
                       <Text
                         style={{
                           fontSize: 18,
@@ -552,7 +551,7 @@ class Instagram extends Component {
               backgroundColor: "rgba(0,0,0,0.3)",
             }}
           >
-            <CustomIndicator text='loading...' />
+            <CustomIndicator text="loading..." />
           </View>
         )}
       </View>

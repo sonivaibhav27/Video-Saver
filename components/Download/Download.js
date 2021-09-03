@@ -1,21 +1,15 @@
-import CameraRoll from "@react-native-community/cameraroll";
 import React from "react";
 import {
   View,
   StyleSheet,
-  ToastAndroid,
   Text,
   Alert,
   PermissionsAndroid,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { TouchableNativeFeedback } from "react-native-gesture-handler";
-import RNFetchBlob from "rn-fetch-blob";
-import { interstitial, AdEvent } from "../RemoveAds/InitializeAd";
 import Toast from "../Toast";
-
-import { Client } from "rollbar-react-native";
-const rollbar = new Client("bc7677e227ef4846bcb1633b09b0180c");
+import DownloadHelper from "../Download.helper";
 
 class Download extends React.PureComponent {
   constructor(props) {
@@ -25,12 +19,7 @@ class Download extends React.PureComponent {
     };
     this._isMounted = true;
   }
-  componentDidMount = () => {
-    interstitial.load();
-    this.showAds;
-  };
   componentWillUnmount() {
-    this.showAds && this.showAds();
     this._isMounted = false;
   }
 
@@ -51,47 +40,21 @@ class Download extends React.PureComponent {
   };
   downloadVideo = async () => {
     this.setState({ text: "Downloading..." });
-    this.showAds = interstitial.onAdEvent((type) => {
-      if (type == AdEvent.LOADED) {
-        interstitial.show();
-      } else if (type == AdEvent.ERROR) {
-      }
-    });
-    const date = new Date();
-    const fileName =
-      date.toDateString() + date.getMilliseconds() + date.getTime();
-
-    RNFetchBlob.config({
-      addAndroidDownloads: {
-        useDownloadManager: true,
-        notification: true,
-        path:
-          RNFetchBlob.fs.dirs.MovieDir + "/Video Saver/" + `${fileName}.mp4`,
-      },
-    })
-      .fetch("GET", this.props.url, { "Cache-Control": "no-store" })
-      .then(async (res) => {
-        // the temp file path with file extension `png`
-        ToastAndroid.showWithGravityAndOffset(
-          `File Saved: ${res.path()}`,
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-          0,
-          10
-        );
+    DownloadHelper(
+      this.props.url,
+      () => {
         this.props.getFileForShare(fileName);
         if (this._isMounted) {
           this.setState({ text: "Downloaded" });
         }
-      })
-      .catch((_) => {
-        rollbar.warning(this.props.url);
-        console.log(_);
+      },
+      () => {
         if (this._isMounted) {
           Alert.alert("Error", "Something went wrong while downloading video");
           this.setState({ text: "Download" });
         }
-      });
+      }
+    );
   };
   render() {
     return (

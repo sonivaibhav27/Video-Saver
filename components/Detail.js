@@ -152,7 +152,7 @@ class Detail extends React.Component {
                 }}
                 hitSlop={{ top: 5, left: 5, right: 5, bottom: 5 }}
               >
-                <Icon name='logout' size={20} color='#333' />
+                <Icon name="logout" size={20} color="#333" />
                 <Text style={{ marginLeft: 2 }}>Logout</Text>
               </TouchableOpacity>
             ),
@@ -309,7 +309,7 @@ class Detail extends React.Component {
                 ]}
               >
                 {loading ? (
-                  <ActivityIndicator size='small' color='#fff' />
+                  <ActivityIndicator size="small" color="#fff" />
                 ) : (
                   <Text style={{ fontSize: 18, color: "#f1f1f1" }}>
                     Get Link
@@ -339,7 +339,7 @@ class Detail extends React.Component {
                   Fetched
                 </Text>
                 <Icon
-                  name='checkcircle'
+                  name="checkcircle"
                   style={{ marginLeft: 10 }}
                   size={20}
                   color={"#fff"}
@@ -381,7 +381,7 @@ class Detail extends React.Component {
         </View>
         {this.state.sharePress && (
           <View style={styles.indicatorContainer}>
-            <CustomIndicator text='loading...' />
+            <CustomIndicator text="loading..." />
           </View>
         )}
         {/* this.props.route?.params?.platform === "fb" && this.state.showFBLogin && */}
@@ -389,8 +389,8 @@ class Detail extends React.Component {
           <View style={styles.websiteModal}>
             <FacebookWebsite
               onCrossModal={this.onCrossModal}
-              callback={this.makeRequest}
               isLoggedIn={this.state.isFacebookLogin}
+              pastedUrl={this.state.link}
             />
           </View>
         )}

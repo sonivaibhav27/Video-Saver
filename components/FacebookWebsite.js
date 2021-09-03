@@ -5,14 +5,18 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
-  ActivityIndicator,
   ScrollView,
+  ActivityIndicator as RNActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import { Easing } from "react-native-reanimated";
 import WebView from "react-native-webview";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import AsyncStorage from "@react-native-community/async-storage";
 import { LinkCopyHelper } from "./Help";
+import ActivityIndicator from "./ActivityIndicator";
+import DownloadHelper from "./Download.helper";
 const DownlaodError = ({ closeModal }) => {
   const aValue = React.useRef(new Animated.Value(0)).current;
   React.useEffect(() => {
@@ -85,9 +89,14 @@ const DownlaodError = ({ closeModal }) => {
   );
 };
 
-const FacebookWebsite = ({ onCrossModal, callback, isLoggedIn }) => {
+const FacebookWebsite = ({ onCrossModal, isLoggedIn, pastedUrl }) => {
+  const webViewRef = React.useRef();
   const aR = React.useRef(new Animated.Value(0)).current;
   const [showDownloadError, setShowDownloadError] = React.useState(false);
+  const [pageLoaded, setPageLoaded] = React.useState(false);
+  const [isDownloadStarted, setDownloadedStarted] = React.useState(false);
+  const url = isLoggedIn ? pastedUrl : "https://m.facebook.com/login";
+
   React.useEffect(() => {
     Animated.timing(aR, {
       toValue: 1,
@@ -96,6 +105,49 @@ const FacebookWebsite = ({ onCrossModal, callback, isLoggedIn }) => {
       easing: Easing.linear,
     }).start();
   }, []);
+
+  const getDownloadedLink = () => {
+    setDownloadedStarted(true);
+    fetch(pastedUrl, {})
+      .then((data) => {
+        // console.log(data);
+        return data.text();
+      })
+      .then((html) => {
+        // console.log(html);
+        const startIndex = html.indexOf('<meta property="og:video:url"');
+        //  sd_src_no_ratelimit,sd_Src,video:content
+        if (startIndex == -1) {
+          console.log({
+            err:
+              "This video is private, can't be downloaded without logged in.",
+            code: 400,
+          });
+        }
+        const lastIndex = html.indexOf("/>", startIndex);
+
+        const d = html.substring(startIndex + 39, lastIndex - 2);
+        const url = d.replace(/&amp;/g, "&").trim();
+        console.log({ url });
+        if (url.startsWith("https://")) {
+          DownloadHelper(
+            url,
+            () => {
+              setDownloadedStarted(false);
+            },
+            () => {
+              setDownloadedStarted(false);
+            }
+          );
+        } else {
+          setDownloadedStarted(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <Animated.View
       style={[
@@ -144,6 +196,7 @@ const FacebookWebsite = ({ onCrossModal, callback, isLoggedIn }) => {
           </TouchableOpacity>
         </View>
         <WebView
+          ref={webViewRef}
           renderError={() => {
             return (
               <View
@@ -166,14 +219,16 @@ const FacebookWebsite = ({ onCrossModal, callback, isLoggedIn }) => {
                   alignItems: "center",
                 }}
               >
-                <ActivityIndicator size="large" color="#000" />
+                <RNActivityIndicator size="small" color="#000" />
               </View>
             );
           }}
+          onLoadEnd={(_) => {
+            setPageLoaded(true);
+          }}
           cacheEnabled={false}
           startInLoadingState
-          renderToHardwareTextureAndroid
-          source={{ uri: "https://m.facebook.com/login" }}
+          source={{ uri: url }}
           style={{ flex: 1 }}
           onNavigationStateChange={async (event) => {
             if (
@@ -186,14 +241,23 @@ const FacebookWebsite = ({ onCrossModal, callback, isLoggedIn }) => {
                 // Toast("error");
               }
             }
-
-            // if (isTrue) {
-            //   onCrossModal();
-            //   callback();
-            // }
           }}
         />
       </View>
+      {isLoggedIn && pageLoaded && (
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={getDownloadedLink}
+          style={styles.downloadButtonContainer}
+        >
+          <AntDesign name="arrowdown" size={35} color="#fff" />
+        </TouchableOpacity>
+      )}
+      {isDownloadStarted && (
+        <View style={styles.indicatorContainer}>
+          <ActivityIndicator text="downloading..." />
+        </View>
+      )}
       {showDownloadError && <DownlaodError closeModal={onCrossModal} />}
     </Animated.View>
   );
@@ -267,6 +331,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
     fontWeight: "bold",
+  },
+  downloadButtonContainer: {
+    backgroundColor: "rgba(0, 171, 102, 1)",
+    padding: 15,
+    borderRadius: 100,
+    alignSelf: "flex-end",
+    right: 10,
+    bottom: 10,
+  },
+  indicatorContainer: {
+    ...StyleSheet.absoluteFill,
+    justifyContent: "center",
+    zIndex: 10,
   },
 });
 

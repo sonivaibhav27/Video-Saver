@@ -4,11 +4,12 @@ import { ToastAndroid } from "react-native";
 const header = {
   headers: {
     "User-Agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
   },
   redirect: "follow",
+  crediantials: "omit",
 };
-export default (url: string) => {
+export default (url) => {
   return new Promise((resolve, reject) => {
     async function getResult(retryTimeout, timeout) {
       try {
@@ -28,42 +29,51 @@ export default (url: string) => {
 
         const getHtmlText = await firstFetch.text();
         const $ = cheerio.load(getHtmlText);
-        const getScript = $('script[id="initial-state"]').get()[0].children[0]
+        const getScript = $("script[id='initial-state']").get()[0].children[0]
           .data;
         const contentToJson = JSON.parse(getScript);
-        const response = contentToJson.resourceResponses[0].response.data;
-        console.log("response => ", response);
-        if (response.story_pin_data) {
-          let l = [];
-          Object.keys(response.story_pin_data.pages).map((_, i) => {
-            const video_end = response.story_pin_data.pages[i].blocks[0].video;
-            if (video_end) {
-              l.push({
-                video: video_end.video_list.V_EXP6.url,
-                poster_image: video_end.video_list.V_EXP6.thumbnail,
-              });
-            }
+        console.log({ contentToJson });
+        const responseFromStoryPins = contentToJson.storyPins;
+        const responseFromPins = contentToJson.pins;
+        const getStoryPinId = Object.keys(responseFromStoryPins);
+        if (getStoryPinId.length) {
+          console.log({ response: responseFromStoryPins[getStoryPinId[0]] });
+          const pages = responseFromStoryPins[getStoryPinId[0]].pages;
+          console.log({ pages });
+          const urls = [];
+          pages.forEach((page) => {
+            const endpoint = page.blocks[0].video.video_list.V_EXP7;
+            urls.push({
+              video: endpoint.url,
+              poster_image: endpoint.thumbnail,
+            });
           });
-          if (l.length == 0) {
-            reject({ err: "No videos  found from this pin. " });
-          } else if (l.length == 1) {
+          console.log({ urls });
+          if (urls.length == 1) {
             resolve({
-              url: l[0].video,
+              url: urls[0],
               isMultiple: false,
             });
           } else {
             resolve({
-              url: l,
+              url: urls,
               isMultiple: true,
             });
           }
-        } else if (response.videos) {
-          resolve({
-            url: response.videos.video_list.V_720P.url,
-            isMultiple: false,
-          });
-        } else if (response.images) {
-          reject({ err: "No Video Found." });
+        }
+
+        const keysOfResponseFromPins = Object.keys(responseFromPins);
+        if (keysOfResponseFromPins.length) {
+          const videos_ = responseFromPins[keysOfResponseFromPins[0]].videos;
+          if (videos_) {
+            Object.values(videos_.video_list).forEach((item) => {
+              if (item.url && item.url.indexOf(".mp4")) {
+                resolve({ url: item.url, isMultiple: false });
+              }
+            });
+          } else {
+            reject({ err: "No video found." });
+          }
         }
       } catch (err) {
         console.log(err);

@@ -5,7 +5,7 @@ export default ({ text }) => {
   return (
     <View style={styles.container}>
       <View style={styles.main}>
-        <ActivityIndicator color="#999" size="large" />
+        <ActivityIndicator color="#333" size="large" />
         <Text style={styles.textStyle}>{text}</Text>
       </View>
     </View>
@@ -29,11 +29,13 @@ const styles = StyleSheet.create({
     borderColor: "#eee",
     shadowColor: "#eee",
     borderRadius: 3,
+    alignItems: "center",
   },
   textStyle: {
     marginLeft: 20,
     fontSize: 16,
     fontWeight: "600",
     color: "#000",
+    textTransform: "capitalize",
   },
 });
