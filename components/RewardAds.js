@@ -11,7 +11,7 @@ import { ToastAndroid } from "react-native";
 // const AdsId = "ca-app-pub-2540765935808056~2490457734";
 const AdsId = __DEV__
   ? TestIds.REWARDED
-  : "ca-app-pub-2540765935808056/5383040921";
+  : "ca-app-pub-2540765935808056/2949622732";
 
 let rewarded = RewardedAd.createForAdRequest(AdsId, {
   requestNonPersonalizedAdsOnly: false,
@@ -21,7 +21,6 @@ const useRewardAdsHook = () => {
   const eventHandler = React.useCallback(
     (setLoadCallback, afterWatchCallback) => {
       const event = rewarded.onAdEvent((type, error) => {
-        alert(type);
         if (error) {
           console.log(error);
           ToastAndroid.showWithGravityAndOffset(

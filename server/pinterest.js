@@ -51,7 +51,7 @@ export default (url) => {
           console.log({ urls });
           if (urls.length == 1) {
             resolve({
-              url: urls[0],
+              url: urls[0].video,
               isMultiple: false,
             });
           } else {
@@ -96,13 +96,13 @@ export default (url) => {
     if (url.startsWith("https://pin.it/") || url.indexOf("pinterest") != -1) {
       const timeout = setTimeout(() => {
         clearTimeout(timeout);
+        clearTimeout(retry);
         reject({
           err:
             "Can't able to fetch results, Please check your internet connection.",
         });
       }, 40000);
 
-      getResult(retry, timeout);
       const retry = setTimeout(() => {
         ToastAndroid.showWithGravityAndOffset(
           "detected slow internet, trying again...",
@@ -113,6 +113,7 @@ export default (url) => {
         );
         getResult(retry, timeout);
       }, 20000);
+      getResult(retry, timeout);
     } else {
       reject({
         err: "Link is Invalid,Link should look like these  https://pin.it/ ",

@@ -17,7 +17,7 @@ const RewardAlert = ({ close, loading, showAdCallback }) => {
         style={styles.crossContainer}
         onPress={close}
       >
-        <Entypo name='cross' size={20} color='#fff' />
+        <Entypo name="cross" size={20} color="#fff" />
       </TouchableOpacity>
       <View style={styles.subContainer}>
         <View>
@@ -39,9 +39,9 @@ const RewardAlert = ({ close, loading, showAdCallback }) => {
           style={styles.btnContainer}
         >
           {!loading ? (
-            <ActivityIndicator size='small' color='#fff' />
+            <ActivityIndicator size="small" color="#fff" />
           ) : (
-            <Text style={styles.btnText}>Watch ad to help us😇</Text>
+            <Text style={styles.btnText}>Watch ad to help us</Text>
           )}
         </TouchableOpacity>
       </View>
