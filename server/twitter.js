@@ -40,20 +40,26 @@ export default (twitterURL) => {
         .then((res) => {
           const videos = res.extended_entities.media[0].video_info.variants;
           //   resolve(videos);
-          let bitrate = 0;
+          let foundSd = false;
+          console.log({ videos });
+          let hdVideo = null;
+          let sdVideo = null;
           for (let video of videos) {
             if (video.content_type !== "video/mp4") {
               continue;
             }
-            if (video.bitrate && video.bitrate > bitrate) {
-              bitrate = video.bitrate;
+            if (video.url.indexOf("720") !== -1) {
+              hdVideo = video.url;
+            }
+            if (!foundSd) {
+              foundSd = true;
+              sdVideo = video.url;
             }
           }
-          if (bitrate === 0) {
-            resolve(videos[0]);
+          // const findTheItem = videos.find((video) => video.bitrate === bitrate);
+          if (foundSd) {
+            resolve({ sd: sdVideo, hd: hdVideo });
           }
-          const findTheItem = videos.find((video) => video.bitrate === bitrate);
-          resolve(findTheItem);
         })
         .catch((err) => {
           clearTimeout(timeout);

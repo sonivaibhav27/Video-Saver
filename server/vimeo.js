@@ -55,7 +55,15 @@ export default function downloadVimeo(url) {
                     width: item.width,
                     height: item.height,
                   });
+                  console.log(l);
                 }
+              });
+
+              //convert the q string to integer
+              l.map((data) => {
+                const QualityInstring = data.q;
+                const quality = QualityInstring.split("p")[0];
+                data.q = +quality;
               });
 
               resolve({

@@ -1,17 +1,33 @@
 import React from "react";
-import {Platform,Text,View} from "react-native"
-import App from "./App"
+import { Platform, StyleSheet, Text, View } from "react-native";
+import Qonversion from "react-native-qonversion";
 
+import Navigation from "./src/navigation";
 
-export default ()=>{
-    return (
-        <View style={{flex:1}}>
-         {
-            Platform.OS == 'android' ?  <App/> :<View style={{flex:1,justifyContent: 'center',alignItems: 'center',}}><Text>
-                We Don't support for {Platform.OS} Now, We will release soon :)
-                </Text></View> 
-         }
+Qonversion.launchWithKey("KeLfiChTvAJ7Xk-w49QVGcMklAlUFqOS", false);
+export default () => {
+  return (
+    <View style={styles.flex1}>
+      {Platform.OS === "android" ? (
+        <Navigation />
+      ) : (
+        <View style={styles.screenCenter}>
+          <Text>
+            We Don't support for {Platform.OS} Now, We will release soon :)
+          </Text>
         </View>
-     
-    )
-}
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
+  screenCenter: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

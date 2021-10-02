@@ -41,6 +41,9 @@ export default (url) => {
           const pages = responseFromStoryPins[getStoryPinId[0]].pages;
           console.log({ pages });
           const urls = [];
+          console.log({
+            url: pages,
+          });
           pages.forEach((page) => {
             const endpoint = page.blocks[0].video.video_list.V_EXP7;
             urls.push({
@@ -49,7 +52,7 @@ export default (url) => {
             });
           });
           console.log({ urls });
-          if (urls.length == 1) {
+          if (urls.length === 1) {
             resolve({
               url: urls[0].video,
               isMultiple: false,
@@ -65,9 +68,13 @@ export default (url) => {
         const keysOfResponseFromPins = Object.keys(responseFromPins);
         if (keysOfResponseFromPins.length) {
           const videos_ = responseFromPins[keysOfResponseFromPins[0]].videos;
+          console.log({ videos_ });
           if (videos_) {
             Object.values(videos_.video_list).forEach((item) => {
               if (item.url && item.url.indexOf(".mp4")) {
+                console.log({
+                  url: item.url,
+                });
                 resolve({ url: item.url, isMultiple: false });
               }
             });
@@ -79,7 +86,7 @@ export default (url) => {
         console.log(err);
         clearTimeout(retryTimeout);
         clearTimeout(timeout);
-        if (err.message == "Network request failed") {
+        if (err.message === "Network request failed") {
           reject({
             err: "Seems like you are not connected to internet.",
             code: 400,
@@ -93,7 +100,7 @@ export default (url) => {
       }
     }
 
-    if (url.startsWith("https://pin.it/") || url.indexOf("pinterest") != -1) {
+    if (url.startsWith("https://pin.it/") || url.indexOf("pinterest") !== -1) {
       const timeout = setTimeout(() => {
         clearTimeout(timeout);
         clearTimeout(retry);

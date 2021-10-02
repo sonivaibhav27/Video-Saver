@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "release": "react-native run-android --variant=release",
     "restart": "adb reverse tcp:8081 tcp:8081",
-    "update": "appcenter codepush release-react -a vidowndownload-gmail.com/Vidown -m -d Production  --target-binary-version \"6.4.3-release\" --description \"Instagram video error in some mobiles \""
+    "update": "appcenter codepush release-react -a vidowndownload-gmail.com/Vidown -m -d Production  --target-binary-version \"6.4.5-release\" --description \"Instagram video error in some mobiles \""
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
@@ -31,6 +31,7 @@
     "react-native-gesture-handler": "^1.9.0",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-onesignal": "^3.9.3",
+    "react-native-qonversion": "^3.1.1",
     "react-native-reanimated": "^1.13.2",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.15.0",
@@ -43,11 +44,15 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-export-namespace-from": "^7.14.5",
     "@babel/runtime": "^7.8.4",
     "@react-native-community/eslint-config": "^1.1.0",
+    "babel-eslint": "^10.1.0",
     "babel-jest": "^25.1.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "eslint": "^6.5.1",
+    "eslint": "^7.32.0",
+    "eslint-plugin-react": "^7.26.0",
+    "eslint-plugin-react-native": "^3.11.0",
     "hermes-engine": "0.5.1",
     "jest": "^25.1.0",
     "metro-react-native-babel-preset": "^0.59.0",
