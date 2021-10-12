@@ -7,7 +7,6 @@ import {
   UIManager,
   LayoutAnimation,
 } from "react-native";
-import RNFetchBlob from "rn-fetch-blob";
 import { Transitioning, Transition } from "react-native-reanimated";
 import Clipboard from "@react-native-community/clipboard";
 
@@ -16,7 +15,7 @@ import downloadVimeo from "../../../server/vimeo";
 import { PasteLinkInput, Toast, ShareVideo, ActionButtons } from "../../common";
 import { Context, DownloadLocation } from "../../config";
 import { DownloadModalForDifferentVideoResolutions } from "./components";
-
+import { AdsHook } from "../../hooks";
 class Vimeo extends React.Component {
   constructor() {
     super();
@@ -62,32 +61,9 @@ class Vimeo extends React.Component {
       }
     } catch (_) {}
   }
-  downloadVimeoIntoDevice = async (url, quality) => {
-    if (quality === "720p") {
-    }
+  hideModal = () => {
     this.ref?.animateNextTransition();
     this.setState({ show: false });
-    const date = new Date();
-    const fileName =
-      date.toDateString() + date.getMilliseconds() + date.getTime();
-    try {
-      const setupDownload = RNFetchBlob.config({
-        addAndroidDownloads: {
-          useDownloadManager: true,
-          notification: true,
-          path:
-            RNFetchBlob.fs.dirs.MovieDir + "/Video Saver/" + `${fileName}.mp4`,
-        },
-      });
-      const res = await setupDownload.fetch("GET", url);
-
-      if (this._isMount) {
-        this.setState({ file: fileName });
-      }
-      Toast(`File Saved: ${res.path()}`);
-    } catch (_) {
-      Toast("Something went wrong while downloading video");
-    }
   };
 
   fetchVimeo = () => {
@@ -173,11 +149,8 @@ class Vimeo extends React.Component {
             We are currently supporting only public videos of vimeo platform.
           </Text>
 
-          {/* {this.state.data.length <= 0 && (
-            <View style={styles.align_margin}>
-              <BannerAd unitId={BannerID} size={AD_SIZE.MEDIUM_RECTANGLE} />
-            </View>
-          )} */}
+          <AdsHook.BannerAd show={this.state.data.length >= 0} />
+
           {this.state.file.length > 0 && (
             <View style={styles.align_margin}>
               <ShareVideo
@@ -190,8 +163,9 @@ class Vimeo extends React.Component {
           {this.state.data.length > 0 && this.state.show && (
             <DownloadModalForDifferentVideoResolutions
               data={this.state.data}
-              downloadVimeoIntoDevice={this.downloadVimeoIntoDevice}
+              hideModal={this.hideModal}
               posterImage={this.state.image}
+              isPremiumUser={this.props.isPremiumUser}
             />
           )}
         </View>
@@ -202,8 +176,6 @@ class Vimeo extends React.Component {
 
 export default (props) => {
   const rollbar = React.useContext(Context.RollbarLoggerContext);
-  // const useRewardedAd = useRewardAdsHook();
-  // console.log(useRewardedAd);
   return <Vimeo {...props} rollbarLogger={rollbar} />;
 };
 

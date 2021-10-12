@@ -29,10 +29,10 @@ const PreviewVideoButton = ({
       activeOpacity={1}
     >
       {showIcon ? (
-        <Icons.Feather name="tv" size={16} color="white" />
+        <Icons.Feather name="tv" size={16} color="rgba(0, 171, 102, 1)" />
       ) : (
         <View style={styles.buttonContainer}>
-          <Icons.Feather name="tv" size={16} color="white" />
+          <Icons.Feather name="tv" size={16} color="rgba(0, 171, 102, 1)" />
           <Text style={[styles.text, { fontSize: textFontSize }]}>
             Watch Video
           </Text>
@@ -52,11 +52,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginBottom: 15,
     maxWidth: 350,
-    backgroundColor: "rgba(0, 171, 102, 1)",
+    borderColor: "rgba(0, 171, 102, 1)",
+    borderWidth: 1,
   },
   text: {
     fontSize: 20,
-    color: "#fff",
+    color: "rgba(0, 171, 102, 1)",
     fontWeight: "700",
     marginLeft: 10,
   },

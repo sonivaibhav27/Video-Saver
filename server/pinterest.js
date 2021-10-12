@@ -32,14 +32,12 @@ export default (url) => {
         const getScript = $("script[id='initial-state']").get()[0].children[0]
           .data;
         const contentToJson = JSON.parse(getScript);
-        console.log({ contentToJson });
         const responseFromStoryPins = contentToJson.storyPins;
         const responseFromPins = contentToJson.pins;
         const getStoryPinId = Object.keys(responseFromStoryPins);
         if (getStoryPinId.length) {
           console.log({ response: responseFromStoryPins[getStoryPinId[0]] });
           const pages = responseFromStoryPins[getStoryPinId[0]].pages;
-          console.log({ pages });
           const urls = [];
           console.log({
             url: pages,
@@ -51,7 +49,6 @@ export default (url) => {
               poster_image: endpoint.thumbnail,
             });
           });
-          console.log({ urls });
           if (urls.length === 1) {
             resolve({
               url: urls[0].video,
@@ -65,6 +62,35 @@ export default (url) => {
           }
         }
 
+        const fromPinResources = contentToJson.resources;
+        console.log(fromPinResources);
+        if (Object.keys(fromPinResources).length > 0) {
+          if (fromPinResources.PinResource) {
+            const key = Object.keys(fromPinResources.PinResource);
+            if (key.length) {
+              const dataNode = fromPinResources.PinResource[key].data;
+              console.log({ dataNode });
+              if (
+                dataNode != null &&
+                dataNode.videos != null &&
+                dataNode.videos.video_list != null
+              ) {
+                Object.values(dataNode.videos.video_list).forEach((item) => {
+                  if (item.url && item.url.indexOf(".mp4")) {
+                    console.log({
+                      url: item.url,
+                    });
+                    resolve({
+                      url: item.url,
+                      isMultiple: false,
+                    });
+                  }
+                });
+              }
+            }
+          }
+        }
+
         const keysOfResponseFromPins = Object.keys(responseFromPins);
         if (keysOfResponseFromPins.length) {
           const videos_ = responseFromPins[keysOfResponseFromPins[0]].videos;
@@ -75,7 +101,10 @@ export default (url) => {
                 console.log({
                   url: item.url,
                 });
-                resolve({ url: item.url, isMultiple: false });
+                resolve({
+                  url: item.url,
+                  isMultiple: false,
+                });
               }
             });
           } else {

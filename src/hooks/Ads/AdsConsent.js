@@ -4,7 +4,7 @@ import {
   AdsConsentDebugGeography,
   AdsConsentStatus,
 } from "@react-native-firebase/admob";
-
+import { PRIVACY_POLICY } from "../../config";
 export default () => {
   const [userConsentStatus, setUserConsentStatus] = React.useState(null);
   React.useEffect(() => {
@@ -69,7 +69,7 @@ export default () => {
 
   const showAdConsentForm = async () => {
     const formResult = await AdsConsent.showForm({
-      privacyPolicy: "https://ranuja-apps.github.io/",
+      privacyPolicy: PRIVACY_POLICY,
       withPersonalizedAds: true,
       withNonPersonalizedAds: true,
     });

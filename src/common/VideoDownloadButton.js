@@ -12,7 +12,6 @@ import { Icons, Download } from "../utils";
 import Toast from "./Toast";
 import { AdsHook } from "../hooks";
 import { Context } from "../config";
-
 class VideoDownloadButton extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -45,10 +44,13 @@ class VideoDownloadButton extends React.PureComponent {
     Download(
       this.props.url,
       (fileName) => {
-        this.props.showAd();
-        this.props.getFileForShare(fileName);
+        if (!this.props.isPremiumUser) {
+          this.props.showAd();
+        }
         if (this._isMounted) {
-          this.setState({ text: "Downloaded" });
+          this.setState({ text: "Downloaded" }, () => {
+            this.props.getFileForShare(fileName);
+          });
         }
       },
       () => {
@@ -106,14 +108,23 @@ const styles = StyleSheet.create({
 
 export default (props) => {
   const interestialAd = AdsHook.useInterestitialAd();
+
   const adsConsent = React.useContext(Context.AdsConsentContext);
   React.useEffect(() => {
-    interestialAd.interestitialModifiedForEEA(adsConsent);
-    interestialAd.loadAd();
-    const event = interestialAd.eventHandler(() => {
-      // interestialAd.showAd();
-    });
-    return event;
+    let event;
+    if (!props.isPremiumUser) {
+      interestialAd.interestitialModifiedForEEA(adsConsent);
+      interestialAd.loadAd();
+      event = interestialAd.eventHandler(() => {
+        // interestialAd.showAd();
+      });
+    }
+
+    return () => {
+      if (typeof event !== "undefined") {
+        event();
+      }
+    };
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

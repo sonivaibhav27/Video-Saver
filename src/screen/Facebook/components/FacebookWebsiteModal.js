@@ -46,8 +46,7 @@ const FacebookWebsite = ({ onCrossModal, isLoggedIn, pastedUrl }) => {
         //  sd_src_no_ratelimit,sd_Src,video:content
         if (startIndex === -1) {
           console.log({
-            err:
-              "This video is private, can't be downloaded without logged in.",
+            err: "This video is restricted as per facebook policy.",
             code: 400,
           });
         }

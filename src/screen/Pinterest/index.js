@@ -21,6 +21,7 @@ import {
 import { DownloadLocation, Context } from "../../config";
 import { MultipleVideoDownloadModal } from "../Instagram/components";
 import downloadPin from "../../../server/pinterest";
+import { AdsHook } from "../../hooks";
 class PrivateVideo extends React.Component {
   constructor() {
     super();
@@ -105,6 +106,7 @@ class PrivateVideo extends React.Component {
             }
           } else {
             if (this._isMount) {
+              console.log(response);
               this.setState({ pinUrl: response, isDataArrive: false });
             }
           }
@@ -193,43 +195,37 @@ class PrivateVideo extends React.Component {
           whenToShowLoadingIndicator={this.state.isDataArrive}
         />
 
-        {
-          this.state.file.length > 0 &&
-          this.state.pinterestResult.url.length <= 0 ? (
-            <View style={styles.align_margin}>
-              <ShareVideo
-                shareDone={this.shareDone}
-                onSharePressed={this.onSharePressed}
-                uri={`file:///${DownloadLocation}/${this.state.file}.mp4`}
-              />
-            </View>
-          ) : null
-
-          //   <View style={styles.align_margin}>
-          //     <BannerAd unitId={BannerID} size={AD_SIZE.MEDIUM_RECTANGLE} />
-          //   </View>
-        }
+        {this.state.file.length > 0 &&
+        this.state.pinterestResult.url.length <= 0 ? (
+          <View style={styles.align_margin}>
+            <ShareVideo
+              shareDone={this.shareDone}
+              onSharePressed={this.onSharePressed}
+              uri={`file:///${DownloadLocation}/${this.state.file}.mp4`}
+            />
+          </View>
+        ) : (
+          <AdsHook.BannerAd />
+        )}
         {this.state.pinterestResult.isMultiple && (
           <MultipleVideoDownloadModal videos={this.state.pinterestResult.url} />
         )}
-        {!this.state.pinterestResult.isMultiple &&
-          this.state.pinterestResult.url.length > 0 && (
-            <>
-              <View style={styles.dummy} />
-              <View style={styles.iconContainer}>
-                {this.state.pinUrl.url != null &&
-                  this.state.file.length <= 0 && (
-                    <PreviewVideoButton url={this.state.pinUrl.url} />
-                  )}
-                <VideoDownloadButton
-                  getFileForShare={(filName) => {
-                    this.setState({ file: filName });
-                  }}
-                  url={this.state.pinUrl.url}
-                />
-              </View>
-            </>
-          )}
+        {Object.keys(this.state.pinUrl).length > 0 && (
+          <>
+            <View style={styles.dummy} />
+            <View style={styles.iconContainer}>
+              {this.state.pinUrl.url != null && this.state.file.length <= 0 && (
+                <PreviewVideoButton url={this.state.pinUrl.url} />
+              )}
+              <VideoDownloadButton
+                getFileForShare={(filName) => {
+                  this.setState({ file: filName });
+                }}
+                url={this.state.pinUrl.url}
+              />
+            </View>
+          </>
+        )}
         {this.state.sharePress && (
           <View style={styles.positionAbsolute}>
             <CustomActivityIndicator text="loading..." />

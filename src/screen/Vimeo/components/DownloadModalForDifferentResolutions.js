@@ -10,15 +10,20 @@ import {
 } from "react-native";
 
 //custom imports;
-import { Icons } from "../../../utils";
-import { PreviewVideoButton } from "../../../common";
+import { Download, Icons } from "../../../utils";
+import { PreviewVideoButton, WatchVideoToDownload } from "../../../common";
 
 const { height } = Dimensions.get("window");
 const DownloadModalForDifferentVideoResolutions = ({
   data,
-  downloadVimeoIntoDevice,
+  hideModal,
   posterImage,
+  isPremiumUser,
 }) => {
+  const downloadVimeo = (url) => {
+    hideModal();
+    Download(url);
+  };
   return (
     <View style={styles.modalContainer}>
       <Text style={styles.foundMultipleTypeText}>Found Multiple Type</Text>
@@ -36,7 +41,10 @@ const DownloadModalForDifferentVideoResolutions = ({
                     style={styles.posterImageStyle}
                   />
                   <View style={styles.margin5}>
-                    <Text style={styles.videoQualityText}>{item.q}</Text>
+                    <View style={styles.flexRowAndAlignCenter}>
+                      <Text style={styles.videoQualityText}>{item.q}</Text>
+                      {item.q >= 720 && <Text style={styles.hdTag}>HD</Text>}
+                    </View>
                     <Text style={styles.videoWidthAndHeightText}>
                       {item.width} x {item.height}
                     </Text>
@@ -49,18 +57,30 @@ const DownloadModalForDifferentVideoResolutions = ({
                     textFontSize={16}
                     showIcon={true}
                   />
-                  <TouchableOpacity
-                    hitSlop={{
-                      bottom: 5,
-                      top: 5,
-                      left: 5,
-                      right: 5,
-                    }}
-                    style={styles.downloadButtonContainer}
-                    onPress={() => downloadVimeoIntoDevice(item.url)}
-                  >
-                    <Icons.AntDesign name="download" size={16} color="white" />
-                  </TouchableOpacity>
+                  {item.q >= 720 ? (
+                    <WatchVideoToDownload.AdButton
+                      showIconOnly
+                      url={item.url}
+                      isPremiumUser={isPremiumUser}
+                    />
+                  ) : (
+                    <TouchableOpacity
+                      hitSlop={{
+                        bottom: 5,
+                        top: 5,
+                        left: 5,
+                        right: 5,
+                      }}
+                      style={styles.downloadButtonContainer}
+                      onPress={() => downloadVimeo(item.url)}
+                    >
+                      <Icons.AntDesign
+                        name="download"
+                        size={16}
+                        color="white"
+                      />
+                    </TouchableOpacity>
+                  )}
                 </View>
               </View>
             </View>
@@ -121,6 +141,13 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     marginRight: 10,
     zIndex: 1000,
+  },
+  hdTag: {
+    marginLeft: 5,
+    backgroundColor: "#4e28a6",
+    padding: 4,
+    color: "#fff",
+    borderRadius: 4,
   },
 });
 export default DownloadModalForDifferentVideoResolutions;

@@ -16,6 +16,7 @@ import {
 } from "../../common";
 import { DownloadLocation, Context } from "../../config";
 import downloadTwitter from "../../../server/twitter";
+import { AdsHook } from "../../hooks";
 
 class Twitter extends React.Component {
   constructor() {
@@ -36,6 +37,9 @@ class Twitter extends React.Component {
       downloadTwitter(this.state.link)
         .then((response) => {
           if (this._isMounted) {
+            console.log({
+              response,
+            });
             this.setState({ data: response, loading: false });
           }
         })
@@ -130,35 +134,33 @@ class Twitter extends React.Component {
           urlLink={link}
           whenToShowLoadingIndicator={loading}
         />
-        {
-          file.length > 0 ? (
-            <View style={styles.marginTop}>
-              <ShareVideo
-                shareDone={this.shareDone}
-                onSharePressed={this.onSharePressed}
-                uri={`file:///${DownloadLocation}/${this.state.file}.mp4`}
-              />
-            </View>
-          ) : null
-          // (
-          //   <View style={styles.marginTop}>
-          //     <BannerAd unitId={BannerID} size={AD_SIZE.MEDIUM_RECTANGLE} />
-          //   </View>
-          // )
-        }
+        {file.length > 0 ? (
+          <View style={styles.marginTop}>
+            <ShareVideo
+              shareDone={this.shareDone}
+              onSharePressed={this.onSharePressed}
+              uri={`file:///${DownloadLocation}/${this.state.file}.mp4`}
+            />
+          </View>
+        ) : (
+          <AdsHook.BannerAd />
+        )}
         <View style={styles.marginTop} />
         <View style={styles.downloadContainer}>
-          {data != null && data.url != null && file.length === 0 && (
-            <PreviewVideoButton url={data.url} />
+          {data != null && data.sd != null && file.length === 0 && (
+            <PreviewVideoButton url={data.sd} />
           )}
           {data != null && file.length === 0 && (
-            <View style={styles.flexDirectionAndAlignCenter}>
+            <View>
               {Object.entries(data).map((entry) => {
                 if (entry[1] != null) {
-                  if (entry[0] === "hd" && entry[1] != null) {
+                  if (entry[0] === "hd") {
                     return (
                       <WatchVideoToDownload.WrapperWatchAdButton>
-                        <WatchVideoToDownload.AdButton url={entry[1]} />
+                        <WatchVideoToDownload.AdButton
+                          isPremiumUser={this.props.isPremiumUser}
+                          url={data["hd"] != null ? data["hd"] : data["sd"]}
+                        />
                       </WatchVideoToDownload.WrapperWatchAdButton>
                     );
                   } else {
@@ -209,11 +211,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   marginTop: { alignItems: "center", marginTop: 20 },
-
-  flexDirectionAndAlignCenter: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
 });
 
 export default (props) => {

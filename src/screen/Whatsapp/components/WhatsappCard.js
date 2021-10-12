@@ -62,13 +62,12 @@ export default class WhatsappSection extends PureComponent {
             onPress={() => {
               saveStatus(
                 `file://${dir}/${item}`,
-                item,
                 (destination, error) => {
                   if (error) {
-                    Toast("Error:" + error);
+                    Toast("Error: " + error);
                     return;
                   }
-                  Toast(`File saved :${destination}`);
+                  Toast(`File saved : ${destination}`);
                 },
                 type
               );

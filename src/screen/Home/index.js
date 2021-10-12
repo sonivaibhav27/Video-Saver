@@ -5,8 +5,9 @@ import { View, StyleSheet, Text } from "react-native";
 
 //custom imports;
 import { DownloadButton, Header, IconButton } from "./components";
+import { PricingButton } from "../PricingModal/components";
 
-export default function App({ navigation }) {
+export default function App({ navigation, isPremiumUser }) {
   return (
     <View style={styles.container}>
       <Header />
@@ -62,6 +63,7 @@ export default function App({ navigation }) {
           />
         </View>
         <DownloadButton />
+        {/* {!isPremiumUser && <PricingButton navigation={navigation} />} */}
         <View style={styles.infoContainer}>
           <Text style={styles.infoText}>
             Now Share Whatsapp Status without {"\n"} downloading it. 😊

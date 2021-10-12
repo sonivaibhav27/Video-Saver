@@ -11,3 +11,5 @@ export { default as VimeoScreen } from "./Vimeo";
 export { default as FacebookScreen } from "./Facebook";
 export { default as TwitterScreen } from "./Twitter";
 export { default as SettingScreen } from "./Settings";
+
+export { default as PricingModal } from "./PricingModal";

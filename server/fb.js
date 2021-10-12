@@ -1,5 +1,3 @@
-import { getCookie } from "../components/Cookie";
-import cheerio from "cheerio";
 import urlVerifier from "./CheckUrl";
 const uagents = [
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.47 Safari/537.36",
@@ -31,30 +29,48 @@ const checkForPossibleVideoSite = (html) => {
     "sd_src_no_ratelimit",
     "sd_src",
   ];
+
+  const hdPossible = ["hd_src_no_ratelimit", "hd_src"];
+
+  let urls = {
+    sd: null,
+    hd: null,
+  };
   for (let i = 0; i < possibles.length; i++) {
-    if (i == 2 || i == 3) {
+    if (i === 2 || i === 3) {
       const regex = new RegExp(`${possibles[i]}:"(.+?)"`);
       const exists = html.match(regex);
       console.log({ exists });
       if (exists != null) {
-        return exists[1].replace(/&amp;/g, "&");
+        urls.sd = exists[1].replace(/&amp;/g, "&");
+        break;
       }
     } else {
       const regex = new RegExp(`${possibles[i]} content="(.+?)"`);
       const exists = html.match(regex);
       console.log({ exists });
       if (exists != null) {
-        return exists[1].replace(/&amp;/g, "&");
+        urls.sd = exists[1].replace(/&amp;/g, "&");
+        break;
       }
     }
   }
-  return -1;
+  for (let i = 0; i < hdPossible.length; i++) {
+    const regex = new RegExp(`${hdPossible[i]}:"(.+?)"`);
+    const exists = html.match(regex);
+    console.log({ exists });
+    if (exists != null) {
+      urls.hd = exists[1].replace(/&amp;/g, "&");
+      return urls;
+    }
+  }
+  if (Object.keys(urls).length > 0) return urls;
+  return null;
 };
 
 export default function downloadFb(url) {
   // getDataFromURI();
   return new Promise(async (resolve, reject) => {
-    const result = await getCookie("facebook");
     // alert(JSON.stringify(result));
     const getResult = (retryTimeout, timeout) => {
       fetch(url, {
@@ -115,7 +131,7 @@ export default function downloadFb(url) {
         })
         .then(async (html) => {
           const downloadUrl = checkForPossibleVideoSite(html);
-          if (downloadUrl == -1) {
+          if (downloadUrl === null) {
             reject({
               err:
                 "This video is private, can't be downloaded without logged in.",
@@ -123,7 +139,8 @@ export default function downloadFb(url) {
             });
           }
           console.log(downloadUrl);
-          resolve({ url: downloadUrl });
+
+          resolve({ url: downloadUrl.sd, hd: downloadUrl.hd });
         })
         .catch((err) => {
           clearTimeout(retryTimeout);

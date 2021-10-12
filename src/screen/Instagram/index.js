@@ -20,6 +20,7 @@ import {
 } from "./components";
 import { Cookie } from "../../utils";
 import { Context, DownloadLocation } from "../../config";
+import { AdsHook } from "../../hooks";
 
 // export const UserAgent = [
 //   "Mozilla/5.0 (Linux; Android 9; SM-A102U Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.136 Mobile Safari/537.36 Instagram 155.0.0.37.107 Android (28/9; 320dpi; 720x1468; samsung; SM-A102U; a10e; exynos7885; en_US; 239490550)",
@@ -162,9 +163,11 @@ class Instagram extends Component {
           },
         })
           .then((data) => {
+            // console.log(data);
             return data.json();
           })
           .then((response) => {
+            console.log(response);
             if (Object.keys(response).length > 0) {
               let data = response.graphql.shortcode_media;
               if (data.is_video) {
@@ -355,6 +358,8 @@ class Instagram extends Component {
               )}
           </React.Fragment>
         )}
+
+        <AdsHook.BannerAd show={this.state.instagramResult.url.length === 0} />
 
         {this.state.showInstaLogin && (
           <WebView

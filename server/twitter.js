@@ -45,6 +45,7 @@ export default (twitterURL) => {
           let hdVideo = null;
           let sdVideo = null;
           for (let video of videos) {
+            console.log(video);
             if (video.content_type !== "video/mp4") {
               continue;
             }

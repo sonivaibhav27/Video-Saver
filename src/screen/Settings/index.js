@@ -10,7 +10,23 @@ import {
 import { useNavigation } from "@react-navigation/native";
 //custom imports
 import { Toast } from "../../common";
-import { Icons } from "../../utils";
+import { Icons, QonversionInApp } from "../../utils";
+import { PRIVACY_POLICY } from "../../config";
+
+const ICON_SIZE = 25;
+
+const Button = ({ onPress, text, icon }) => {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.3}
+      style={styles.buttonContainer}
+      onPress={onPress}
+    >
+      {icon !== undefined && icon}
+      <Text style={styles.buttonText}>{text}</Text>
+    </TouchableOpacity>
+  );
+};
 
 export default () => {
   const navigation = useNavigation();
@@ -23,12 +39,12 @@ export default () => {
   };
 
   const openPrivacyPolicy = () => {
-    openLicensesInBrowser(undefined, "https://ranuja-apps.github.io/");
+    openLicensesInBrowser(PRIVACY_POLICY);
   };
 
   const openGooglePlay = () => {
     try {
-      Linking.openURL("market://details?id=com.vidown");
+      Linking.openURL("market://details?id=com.vidownranuja");
     } catch (error) {
       Alert.alert("Error", "Failed to open google play");
     }
@@ -41,33 +57,42 @@ export default () => {
     navigation.navigate("help");
   };
 
+  const restorePurchase = () => {
+    QonversionInApp.restorePayment();
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={styles.buttonContainer}
+      {/* <Button
+        onPress={restorePurchase}
+        text="Restore Purchases"
+        icon={<Icons.Entypo name="lock" color="#000" size={ICON_SIZE} />}
+      /> */}
+      <Button
         onPress={navigateToHelp}
-      >
-        <Text style={styles.buttonText}>How to copy link?</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={styles.buttonContainer}
+        text="How to copy link?"
+        icon={<Icons.AntDesign name="copy1" color="#000" size={ICON_SIZE} />}
+      />
+      <Button
+        onPress={() => {}}
+        text="Vidowndownload@gmail.com"
+        icon={<Icons.AntDesign name="mail" color="#000" size={ICON_SIZE} />}
+      />
+      <Button
         onPress={openPrivacyPolicy}
-      >
-        <Text style={styles.buttonText}>Privacy Policy</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
+        text="Privacy Policy"
+        icon={
+          <Icons.Entypo name="text-document" color="#000" size={ICON_SIZE} />
+        }
+      />
+      <Button
         onPress={openToC}
-        activeOpacity={0.8}
-        style={styles.buttonContainer}
-      >
-        <Text style={styles.buttonText}>Terms of Service</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonContainer}>
-        <Text style={styles.buttonText}>Contact us</Text>
-        <Text style={styles.mailUsText}>Mail at: Vidowndownload@gmail.com</Text>
-      </TouchableOpacity>
+        text="Terms of Service"
+        icon={
+          <Icons.Entypo name="text-document" color="#000" size={ICON_SIZE} />
+        }
+      />
+
       <TouchableOpacity
         onPress={openGooglePlay}
         style={[styles.buttonContainer, styles.ratingButtonContainer]}
@@ -97,16 +122,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonContainer: {
-    backgroundColor: "#e7e7e7",
-    padding: 10,
+    borderColor: "#eee",
+    padding: 15,
     marginTop: 20,
     marginHorizontal: 20,
     borderRadius: 5,
-    justifyContent: "center",
     alignItems: "center",
+    borderBottomWidth: 1,
+    flexDirection: "row",
   },
   buttonText: {
     color: "#333",
+    marginLeft: 10,
   },
   ratingUsText: {
     color: "#fff",
@@ -114,7 +141,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginLeft: 5,
   },
-  mailUsText: { marginTop: 5, color: "#000", fontWeight: "bold" },
-  ratingButtonContainer: { backgroundColor: "#000", alignItems: "center" },
+  ratingButtonContainer: {
+    backgroundColor: "#000",
+    alignItems: "center",
+    flexDirection: "column",
+  },
   flexDirection: { flexDirection: "row" },
 });

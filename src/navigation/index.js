@@ -20,27 +20,28 @@ import {
   VimeoScreen,
   FacebookScreen,
   TwitterScreen,
+  PricingModal,
 } from "../screen";
 import { Toast } from "../common";
-import { Cookie, Splash } from "../utils";
-import { Context, CodePush } from "../config";
+import { Cookie, QonversionInApp, Splash } from "../utils";
+import { Context, CodePush, Keys } from "../config";
 import { AdsHook } from "../hooks";
 
 const Stack = createStackNavigator();
 
-const rollbar = new Client("bc7677e227ef4846bcb1633b09b0180c");
+const rollbar = new Client(Keys.Key_Rollbar);
 
-const _id = "7a688fc2-1c44-4935-bcee-17f7bee60bee";
 class Navigation extends React.Component {
   constructor(properties) {
     super(properties);
     OneSignal.setLogLevel(6, 0);
-    OneSignal.init(_id);
+    OneSignal.init(Keys.KEY_OneSignal);
     OneSignal.inFocusDisplaying(2); // Controls what should happen if a notification is received while the app is open. 2 means that the notification will go directly to the device's notification center.
     this.state = {
       permission: false,
       loading: true,
       showPermissionScreen: false,
+      userIsPremium: false,
     };
   }
 
@@ -56,6 +57,7 @@ class Navigation extends React.Component {
   };
   componentDidMount() {
     this.clearCookieForFirstTime();
+    // this.checkIfUserIsPremium();
     PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
     )
@@ -76,6 +78,27 @@ class Navigation extends React.Component {
       });
   }
 
+  checkIfUserIsPremium = () => {
+    QonversionInApp.checkIfUserPremium()
+      .then((isPremium) => {
+        this.setState({ userIsPremium: isPremium });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.checkInAsyncStorageForPremium();
+      });
+  };
+  checkInAsyncStorageForPremium = () => {
+    AsyncStorage.getItem("premium")
+      .then((data) => {
+        if (data) {
+          this.setState({ userIsPremium: true });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   onPress = () => {
     this.setState({
       permission: true,
@@ -114,46 +137,82 @@ class Navigation extends React.Component {
                 >
                   <Stack.Screen
                     name="Entry"
-                    component={HomeScreen}
                     options={{
                       headerShown: false,
                     }}
-                  />
+                  >
+                    {(initialsProps) => (
+                      <HomeScreen
+                        {...initialsProps}
+                        isPremiumUser={this.state.userIsPremium}
+                      />
+                    )}
+                  </Stack.Screen>
                   <Stack.Screen
                     name="facebook"
-                    component={FacebookScreen}
                     options={{
                       headerTitle: "Facebook",
                     }}
-                  />
+                  >
+                    {(initialsProps) => (
+                      <FacebookScreen
+                        {...initialsProps}
+                        isPremiumUser={this.state.userIsPremium}
+                      />
+                    )}
+                  </Stack.Screen>
                   <Stack.Screen
                     name="twitter"
-                    component={TwitterScreen}
                     options={{
                       headerTitle: "Twitter",
                     }}
-                  />
+                  >
+                    {(initialsProps) => (
+                      <TwitterScreen
+                        {...initialsProps}
+                        isPremiumUser={this.state.userIsPremium}
+                      />
+                    )}
+                  </Stack.Screen>
                   <Stack.Screen
                     name="instagram"
-                    component={InstagramScreen}
                     options={{
                       headerTitle: "Instagram",
                     }}
-                  />
+                  >
+                    {(initialsProps) => (
+                      <InstagramScreen
+                        {...initialsProps}
+                        isPremiumUser={this.state.userIsPremium}
+                      />
+                    )}
+                  </Stack.Screen>
                   <Stack.Screen
                     name="pinterest"
-                    component={PinterestScreen}
                     options={{
                       headerTitle: "Pinterest",
                     }}
-                  />
+                  >
+                    {(initialsProps) => (
+                      <PinterestScreen
+                        {...initialsProps}
+                        isPremiumUser={this.state.userIsPremium}
+                      />
+                    )}
+                  </Stack.Screen>
                   <Stack.Screen
                     name="vimeo"
-                    component={VimeoScreen}
                     options={{
                       headerTitle: "Vimeo",
                     }}
-                  />
+                  >
+                    {(initialsProps) => (
+                      <VimeoScreen
+                        {...initialsProps}
+                        isPremiumUser={this.state.userIsPremium}
+                      />
+                    )}
+                  </Stack.Screen>
 
                   <Stack.Screen
                     name="whatsapp"
@@ -178,6 +237,11 @@ class Navigation extends React.Component {
                     name="preview"
                     component={PreviewVideoScreen}
                     options={{ title: "Watch " }}
+                  />
+                  <Stack.Screen
+                    name="pricingModal"
+                    component={PricingModal}
+                    options={{ headerShown: false }}
                   />
                 </Stack.Navigator>
               </NavigationContainer>

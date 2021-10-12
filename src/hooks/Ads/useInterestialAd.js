@@ -6,7 +6,9 @@ import {
   TestIds,
 } from "@react-native-firebase/admob";
 
-const AdsId = TestIds.INTERSTITIAL;
+const AdsId = __DEV__
+  ? TestIds.INTERSTITIAL
+  : "ca-app-pub-2540765935808056/1472617431";
 export default () => {
   const interstitial = React.useRef(null);
   React.useEffect(() => {

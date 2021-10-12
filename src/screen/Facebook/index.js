@@ -19,11 +19,13 @@ import {
   Toast,
   PreviewVideoButton,
   ActionButtons,
+  WatchVideoToDownload,
 } from "../../common";
 import { Share, Cookie } from "../../utils";
 import { DownloadLocation, Context } from "../../config";
 import downloadFb from "../../../server/fb";
 import { FacebookWebsiteModal } from "./components";
+import { AdsHook } from "../../hooks";
 const { height } = Dimensions.get("window");
 class Facebook extends React.Component {
   constructor() {
@@ -47,8 +49,14 @@ class Facebook extends React.Component {
       downloadFb(this.state.link)
         .then((response) => {
           if (this._isMounted) {
+            console.log({
+              response,
+            });
             this.setState({
-              data: response,
+              data: {
+                sd: response.url !== -1 ? response.url : null,
+                hd: response.hd !== -1 ? response.hd : null,
+              },
               loading: false,
             });
           }
@@ -76,22 +84,6 @@ class Facebook extends React.Component {
     this.getCLipboardData();
     // AppState.addEventListener("change", this._handlerAppStateChange);
   };
-  // _handlerAppStateChange = (nextAppState) => {
-  //   if (
-  //     this.state.appState.match(/inactive|background/) &&
-  //     nextAppState === "active"
-  //   ) {
-  //     this.setState({ appState: nextAppState });
-  //     if (
-  //       this.state.link.length > 0 &&
-  //       this.props.route.params.platform === "fb" &&
-  //       this._isMounted &&
-  //       this.state.file.length === 0
-  //     ) {
-  //       CodePush.restartApp();
-  //     }
-  //   }
-  // };
 
   _cookie = async () => {
     try {
@@ -216,32 +208,50 @@ class Facebook extends React.Component {
           whenToShowLoadingIndicator={loading}
           urlLink={link}
         />
-        {
-          file.length > 0 ? (
-            <View style={styles.marginTopAndAlignCenter}>
-              <ShareVideo
-                shareDone={this.shareDone}
-                onSharePressed={this.onSharePressed}
-                uri={`file:///${DownloadLocation}/${this.state.file}.mp4`}
-              />
-            </View>
-          ) : null
-          //   <View style={styles.marginTop}>
-          //     <BannerAd unitId={BannerID} size={AD_SIZE.MEDIUM_RECTANGLE} />
-          //   </View>
-        }
+        {file.length > 0 ? (
+          <View style={styles.marginTopAndAlignCenter}>
+            <ShareVideo
+              shareDone={this.shareDone}
+              onSharePressed={this.onSharePressed}
+              uri={`file:///${DownloadLocation}/${this.state.file}.mp4`}
+            />
+          </View>
+        ) : (
+          <AdsHook.BannerAd />
+        )}
         <View style={styles.spacing} />
         <View style={styles.downloadContainer}>
-          {data != null && data.url != null && file.length === 0 && (
-            <PreviewVideoButton url={data.url} />
+          {data != null && data.sd != null && file.length === 0 && (
+            <PreviewVideoButton url={data.sd} />
           )}
           {data != null && file.length === 0 && (
-            <VideoDownloadButton
-              getFileForShare={(fileName) => {
-                this.setState({ file: fileName });
-              }}
-              url={data === null ? undefined : data.url}
-            />
+            <View>
+              {Object.entries(data).map((entry) => {
+                if (entry[1] != null) {
+                  if (entry[0] === "hd" && entry[1] != null) {
+                    return (
+                      <WatchVideoToDownload.WrapperWatchAdButton key={entry[0]}>
+                        <WatchVideoToDownload.AdButton
+                          isPremiumUser={this.props.isPremiumUser}
+                          url={entry[1]}
+                        />
+                      </WatchVideoToDownload.WrapperWatchAdButton>
+                    );
+                  } else {
+                    return (
+                      <View key={entry[1]}>
+                        <VideoDownloadButton
+                          getFileForShare={(fileName) => {
+                            this.setState({ file: fileName });
+                          }}
+                          url={data === null ? undefined : entry[1]}
+                        />
+                      </View>
+                    );
+                  }
+                }
+              })}
+            </View>
           )}
         </View>
         {this.state.sharePress && (
