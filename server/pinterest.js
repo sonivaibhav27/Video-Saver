@@ -31,52 +31,64 @@ export default (url) => {
         const $ = cheerio.load(getHtmlText);
         const getScript = $("script[id='initial-state']").get()[0].children[0]
           .data;
+        // console.log(getScript);
         const contentToJson = JSON.parse(getScript);
-        const responseFromStoryPins = contentToJson.storyPins;
+        console.log(contentToJson);
         const responseFromPins = contentToJson.pins;
-        const getStoryPinId = Object.keys(responseFromStoryPins);
-        if (getStoryPinId.length) {
-          console.log({ response: responseFromStoryPins[getStoryPinId[0]] });
-          const pages = responseFromStoryPins[getStoryPinId[0]].pages;
-          const urls = [];
-          console.log({
-            url: pages,
-          });
-          pages.forEach((page) => {
-            const endpoint = page.blocks[0].video.video_list.V_EXP7;
-            urls.push({
-              video: endpoint.url,
-              poster_image: endpoint.thumbnail,
+        if (contentToJson.storyPins) {
+          const responseFromStoryPins = contentToJson.storyPins;
+
+          const getStoryPinId = Object.keys(responseFromStoryPins);
+          if (getStoryPinId.length) {
+            console.log({ response: responseFromStoryPins[getStoryPinId[0]] });
+            const pages = responseFromStoryPins[getStoryPinId[0]].pages;
+            const urls = [];
+            console.log({
+              url: pages,
             });
-          });
-          if (urls.length === 1) {
-            resolve({
-              url: urls[0].video,
-              isMultiple: false,
+            pages.forEach((page) => {
+              const endpoint = page.blocks[0].video.video_list.V_EXP7;
+              urls.push({
+                video: endpoint.url,
+                poster_image: endpoint.thumbnail,
+              });
             });
-          } else {
-            resolve({
-              url: urls,
-              isMultiple: true,
-            });
+            if (urls.length === 1) {
+              resolve({
+                url: urls[0].video,
+                isMultiple: false,
+              });
+            } else {
+              resolve({
+                url: urls,
+                isMultiple: true,
+              });
+            }
           }
         }
 
         const fromPinResources = contentToJson.resources;
         console.log(fromPinResources);
         if (Object.keys(fromPinResources).length > 0) {
+          if (fromPinResources.UserResource) {
+            if (fromPinResources.UserResource["user_id=null"]?.error?.message) {
+              reject({
+                err: "No Videos found.",
+              });
+            }
+          }
           if (fromPinResources.PinResource) {
             const key = Object.keys(fromPinResources.PinResource);
             if (key.length) {
               const dataNode = fromPinResources.PinResource[key].data;
-              console.log({ dataNode });
               if (
+                dataNode !== undefined &&
                 dataNode != null &&
                 dataNode.videos != null &&
                 dataNode.videos.video_list != null
               ) {
                 Object.values(dataNode.videos.video_list).forEach((item) => {
-                  if (item.url && item.url.indexOf(".mp4")) {
+                  if (item.url && item.url.indexOf(".mp4") !== -1) {
                     console.log({
                       url: item.url,
                     });
@@ -91,13 +103,14 @@ export default (url) => {
           }
         }
 
+        console.log("Here");
         const keysOfResponseFromPins = Object.keys(responseFromPins);
         if (keysOfResponseFromPins.length) {
           const videos_ = responseFromPins[keysOfResponseFromPins[0]].videos;
           console.log({ videos_ });
           if (videos_) {
             Object.values(videos_.video_list).forEach((item) => {
-              if (item.url && item.url.indexOf(".mp4")) {
+              if (item.url && item.url.indexOf(".mp4") !== -1) {
                 console.log({
                   url: item.url,
                 });
@@ -111,6 +124,7 @@ export default (url) => {
             reject({ err: "No video found." });
           }
         }
+        reject({ err: "No Video found" });
       } catch (err) {
         console.log(err);
         clearTimeout(retryTimeout);

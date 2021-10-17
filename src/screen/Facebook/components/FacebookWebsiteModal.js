@@ -16,7 +16,12 @@ import { Icons, Download } from "../../../utils";
 import SaveVideoToFacebookModal from "./SaveVideoToFacebookModal";
 import { CustomActivityIndicator } from "../../../common";
 
-const FacebookWebsite = ({ onCrossModal, isLoggedIn, pastedUrl }) => {
+const FacebookWebsite = ({
+  onCrossModal,
+  isLoggedIn,
+  pastedUrl,
+  afterLoginCallback,
+}) => {
   const webViewRef = React.useRef();
   const aR = React.useRef(new Animated.Value(0)).current;
   const [showDownloadError, setShowDownloadError] = React.useState(false);
@@ -100,7 +105,9 @@ const FacebookWebsite = ({ onCrossModal, isLoggedIn, pastedUrl }) => {
           >
             {/* eslint-disable-next-line react-native/no-raw-text */}
             <Text style={styles.unableText}>
-              Unable to fetch the request, Go to download error issue.
+              Unable to download the video (If Green download button doesn't
+              apper after login on the bottom right corner.), Go to download
+              error issue.
               <Icons.Entypo name="chevron-right" size={20} />
             </Text>
           </TouchableOpacity>
@@ -134,7 +141,9 @@ const FacebookWebsite = ({ onCrossModal, isLoggedIn, pastedUrl }) => {
           renderLoading={() => {
             return (
               <View style={styles.absoluteCenter}>
-                <RNActivityIndicator size="small" color="#000" />
+                <View style={styles.loadingContainer}>
+                  <RNActivityIndicator size="small" color="#000" />
+                </View>
               </View>
             );
           }}
@@ -152,6 +161,7 @@ const FacebookWebsite = ({ onCrossModal, isLoggedIn, pastedUrl }) => {
             ) {
               try {
                 await AsyncStorage.setItem("fb", "true");
+                afterLoginCallback();
               } catch (err) {
                 // Toast("error");
               }
@@ -219,7 +229,7 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   unableText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
   },
 
@@ -240,6 +250,11 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     justifyContent: "center",
     alignItems: "center",
+  },
+  loadingContainer: {
+    padding: 10,
+    backgroundColor: "#FFF",
+    borderRadius: 100,
   },
 });
 

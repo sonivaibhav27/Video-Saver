@@ -13,6 +13,9 @@ const BannerID = __DEV__
   : "ca-app-pub-2540765935808056/5582621943";
 export default ({ show = true }) => {
   const adConsumer = React.useContext(Context.AdsConsentContext);
+  console.log({
+    adConsumer,
+  });
   if (show && adConsumer !== null && adConsumer !== AdsConsentStatus.UNKNOWN) {
     return (
       <View style={styles.align_margin}>

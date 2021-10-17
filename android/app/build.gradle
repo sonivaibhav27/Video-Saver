@@ -148,8 +148,8 @@ android {
         applicationId "com.vidownranuja"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 123
-        versionName "6.4.7-dev-google-play"
+        versionCode 124
+        versionName "6.4.8-release-google-play"
         multiDexEnabled true
     }
     splits {

@@ -62,6 +62,7 @@ class Facebook extends React.Component {
           }
         })
         .catch((err) => {
+          console.log(err.code);
           if (err.code === 400) {
             this.setState({ showFBLogin: true, loading: false });
           } else {
@@ -262,12 +263,13 @@ class Facebook extends React.Component {
             <CustomActivityIndicator text="loading..." />
           </View>
         )}
-        {this.props.route?.params?.platform === "fb" && this.state.showFBLogin && (
+        {this.state.showFBLogin && (
           <View style={styles.websiteModal}>
             <FacebookWebsiteModal
               onCrossModal={this.onCrossModal}
               isLoggedIn={this.state.isFacebookLogin}
               pastedUrl={this.state.link}
+              afterLoginCallback={this._cookie}
             />
           </View>
         )}

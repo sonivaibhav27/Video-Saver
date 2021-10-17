@@ -53,11 +53,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   instaBtnContainer: {
-    padding: 15,
+    padding: 10,
     backgroundColor: "#000",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 2,
+    borderRadius: 100,
     flexDirection: "row",
   },
   cancelText: {
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
   },
   actionContainer: { flex: 1, justifyContent: "center" },
   cancelContainer: {
-    backgroundColor: "#eee",
-    padding: 15,
+    backgroundColor: "#fff",
+    padding: 10,
     marginTop: 20,
   },
 });

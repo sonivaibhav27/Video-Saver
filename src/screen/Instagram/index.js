@@ -142,6 +142,7 @@ class Instagram extends Component {
   }
 
   fetchResult = async () => {
+    this.setState({ isDataArrive: false });
     const userAgent =
       UserAgent[
         Math.round(Math.random() * UserAgent.length) % UserAgent.length
@@ -359,7 +360,13 @@ class Instagram extends Component {
           </React.Fragment>
         )}
 
-        <AdsHook.BannerAd show={this.state.instagramResult.url.length === 0} />
+        <AdsHook.BannerAd
+          show={
+            this.state.instagramResult.url.length === 0 &&
+            !this.state.showInstaWarning &&
+            !this.state.showInstaLogin
+          }
+        />
 
         {this.state.showInstaLogin && (
           <WebView

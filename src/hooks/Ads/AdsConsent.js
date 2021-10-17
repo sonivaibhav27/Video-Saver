@@ -42,7 +42,8 @@ export default () => {
         userConsentStatus != null &&
         userConsentStatus !== AdsConsentStatus.UNKNOWN
       ) {
-        return userConsentStatus;
+        setUserConsentStatus(userConsentStatus);
+        return;
       }
       const userLocationAndStatus = await userAdLocationAndStatus();
       console.log({

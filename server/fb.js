@@ -64,13 +64,16 @@ const checkForPossibleVideoSite = (html) => {
       return urls;
     }
   }
-  if (Object.keys(urls).length > 0) return urls;
+  if (urls.sd != null) {
+    urls.hd = urls.sd;
+    return urls;
+  }
   return null;
 };
 
 export default function downloadFb(url) {
   // getDataFromURI();
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     // alert(JSON.stringify(result));
     const getResult = (retryTimeout, timeout) => {
       fetch(url, {
@@ -131,16 +134,22 @@ export default function downloadFb(url) {
         })
         .then(async (html) => {
           const downloadUrl = checkForPossibleVideoSite(html);
-          if (downloadUrl === null) {
+          // console.log({
+          //   downloadUrl,
+          // });
+          if (downloadUrl == null) {
+            console.log("inside");
             reject({
               err:
                 "This video is private, can't be downloaded without logged in.",
               code: 400,
             });
-          }
-          console.log(downloadUrl);
+          } else {
+            console.log("exit.");
+            console.log({ downloadUrl });
 
-          resolve({ url: downloadUrl.sd, hd: downloadUrl.hd });
+            resolve({ url: downloadUrl.sd, hd: downloadUrl.hd });
+          }
         })
         .catch((err) => {
           clearTimeout(retryTimeout);
