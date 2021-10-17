@@ -233,6 +233,7 @@ class Facebook extends React.Component {
                     return (
                       <WatchVideoToDownload.WrapperWatchAdButton key={entry[0]}>
                         <WatchVideoToDownload.AdButton
+                          adConsentStatus={this.props.adsConsent}
                           getFileForShare={(fileName) => {
                             this.setState({ file: fileName });
                           }}
@@ -325,5 +326,8 @@ const styles = StyleSheet.create({
 
 export default (props) => {
   const rollbar = React.useContext(Context.RollbarLoggerContext);
-  return <Facebook {...props} rollbarLogger={rollbar} />;
+  const adsConsent = React.useContext(Context.AdsConsentContext);
+  return (
+    <Facebook {...props} adsConsent={adsConsent} rollbarLogger={rollbar} />
+  );
 };

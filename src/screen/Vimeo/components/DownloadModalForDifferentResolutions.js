@@ -11,7 +11,11 @@ import {
 
 //custom imports;
 import { Download, Icons } from "../../../utils";
-import { PreviewVideoButton, WatchVideoToDownload } from "../../../common";
+import {
+  PreviewVideoButton,
+  Toast,
+  WatchVideoToDownload,
+} from "../../../common";
 
 const { height } = Dimensions.get("window");
 const DownloadModalForDifferentVideoResolutions = ({
@@ -20,8 +24,10 @@ const DownloadModalForDifferentVideoResolutions = ({
   posterImage,
   isPremiumUser,
   getFileForShare,
+  adsConsentStatus,
 }) => {
   const downloadVimeo = (url) => {
+    Toast("Download Started", "LONG");
     hideModal();
     Download(url, (file) => {
       getFileForShare(file);
@@ -62,10 +68,12 @@ const DownloadModalForDifferentVideoResolutions = ({
                   />
                   {item.q >= 720 ? (
                     <WatchVideoToDownload.AdButton
+                      adConsentStatus={adsConsentStatus}
                       showIconOnly
                       url={item.url}
                       isPremiumUser={isPremiumUser}
                       getFileForShare={getFileForShare}
+                      hideAllDownloadButtons={hideModal}
                     />
                   ) : (
                     <TouchableOpacity

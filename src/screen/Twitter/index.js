@@ -134,7 +134,7 @@ class Twitter extends React.Component {
           urlLink={link}
           whenToShowLoadingIndicator={loading}
         />
-        {file.length > 0 ? (
+        {file.length > 0 && (
           <View style={styles.marginTop}>
             <ShareVideo
               shareDone={this.shareDone}
@@ -142,9 +142,11 @@ class Twitter extends React.Component {
               uri={`file:///${DownloadLocation}/${this.state.file}.mp4`}
             />
           </View>
-        ) : (
-          <AdsHook.BannerAd />
         )}
+        <AdsHook.BannerAd
+          show={this.state.data === null && this.state.file.length === 0}
+        />
+
         <View style={styles.marginTop} />
         <View style={styles.downloadContainer}>
           {data != null && data.sd != null && file.length === 0 && (
@@ -153,29 +155,35 @@ class Twitter extends React.Component {
           {data != null && file.length === 0 && (
             <View>
               {Object.entries(data).map((entry) => {
-                if (entry[1] != null) {
-                  if (entry[0] === "hd") {
-                    return (
-                      <WatchVideoToDownload.WrapperWatchAdButton>
-                        <WatchVideoToDownload.AdButton
-                          getFileForShare={(fileName) => {
-                            this.setState({ file: fileName });
-                          }}
-                          isPremiumUser={this.props.isPremiumUser}
-                          url={data["hd"] != null ? data["hd"] : data["sd"]}
-                        />
-                      </WatchVideoToDownload.WrapperWatchAdButton>
-                    );
-                  } else {
-                    return (
-                      <VideoDownloadButton
+                if (entry[0] === "hd") {
+                  return (
+                    <WatchVideoToDownload.WrapperWatchAdButton>
+                      <WatchVideoToDownload.AdButton
                         getFileForShare={(fileName) => {
-                          this.setState({ file: fileName });
+                          if (this._isMounted) {
+                            this.setState({ file: fileName });
+                          }
                         }}
-                        url={data === null ? undefined : entry[1]}
+                        adConsentStatus={this.props.adsConsent}
+                        hideAllDownloadButtons={() => {
+                          if (this._isMounted) {
+                            this.setState({ data: null });
+                          }
+                        }}
+                        isPremiumUser={this.props.isPremiumUser}
+                        url={data["hd"] != null ? data["hd"] : data["sd"]}
                       />
-                    );
-                  }
+                    </WatchVideoToDownload.WrapperWatchAdButton>
+                  );
+                } else {
+                  return (
+                    <VideoDownloadButton
+                      getFileForShare={(fileName) => {
+                        this.setState({ file: fileName });
+                      }}
+                      url={data === null ? undefined : entry[1]}
+                    />
+                  );
                 }
               })}
             </View>

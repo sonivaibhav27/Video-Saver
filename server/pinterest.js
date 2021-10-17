@@ -35,6 +35,7 @@ export default (url) => {
         const contentToJson = JSON.parse(getScript);
         console.log(contentToJson);
         const responseFromPins = contentToJson.pins;
+        const urls = [];
         if (contentToJson.storyPins) {
           const responseFromStoryPins = contentToJson.storyPins;
 
@@ -42,23 +43,26 @@ export default (url) => {
           if (getStoryPinId.length) {
             console.log({ response: responseFromStoryPins[getStoryPinId[0]] });
             const pages = responseFromStoryPins[getStoryPinId[0]].pages;
-            const urls = [];
+
             console.log({
               url: pages,
             });
+
             pages.forEach((page) => {
-              const endpoint = page.blocks[0].video.video_list.V_EXP7;
-              urls.push({
-                video: endpoint.url,
-                poster_image: endpoint.thumbnail,
-              });
+              const endpoint = page.blocks[0].video?.video_list.V_EXP7;
+              if (endpoint !== undefined) {
+                urls.push({
+                  video: endpoint.url,
+                  poster_image: endpoint.thumbnail,
+                });
+              }
             });
             if (urls.length === 1) {
               resolve({
                 url: urls[0].video,
                 isMultiple: false,
               });
-            } else {
+            } else if (urls.length > 1) {
               resolve({
                 url: urls,
                 isMultiple: true,
@@ -92,16 +96,25 @@ export default (url) => {
                     console.log({
                       url: item.url,
                     });
-                    resolve({
-                      url: item.url,
-                      isMultiple: false,
-                    });
+                    urls.push(item.url);
                   }
                 });
               }
             }
           }
         }
+        if (urls.length === 1) {
+          resolve({
+            url: urls[0],
+            isMultiple: false,
+          });
+        } else if (urls.length > 1) {
+          resolve({
+            url: urls,
+            isMultiple: true,
+          });
+        }
+        console.log({ urls });
 
         console.log("Here");
         const keysOfResponseFromPins = Object.keys(responseFromPins);
@@ -114,9 +127,8 @@ export default (url) => {
                 console.log({
                   url: item.url,
                 });
-                resolve({
+                urls.push({
                   url: item.url,
-                  isMultiple: false,
                 });
               }
             });
@@ -124,7 +136,19 @@ export default (url) => {
             reject({ err: "No video found." });
           }
         }
-        reject({ err: "No Video found" });
+        if (urls.length === 1) {
+          resolve({
+            url: urls[0],
+            isMultiple: false,
+          });
+        } else if (urls.length > 1) {
+          resolve({
+            url: urls,
+            isMultiple: true,
+          });
+        } else {
+          reject({ err: "No Video found" });
+        }
       } catch (err) {
         console.log(err);
         clearTimeout(retryTimeout);

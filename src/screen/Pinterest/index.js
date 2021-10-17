@@ -139,6 +139,7 @@ class PrivateVideo extends React.Component {
         url: [],
         isMultiple: false,
       },
+      file: "",
     });
   onPasteClicked = () => {
     this.setState({
@@ -149,6 +150,7 @@ class PrivateVideo extends React.Component {
         url: [],
         isMultiple: false,
       },
+      file: "",
     });
     const hasPinterestLink = Clipboard.hasString();
     if (!hasPinterestLink) {

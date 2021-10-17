@@ -160,16 +160,20 @@ class Vimeo extends React.Component {
               />
             </View>
           )}
+
           {this.state.data.length > 0 &&
             this.state.show &&
             this.state.file.length === 0 && (
               <DownloadModalForDifferentVideoResolutions
+                adsConsentStatus={this.props.adsConsent}
                 data={this.state.data}
                 hideModal={this.hideModal}
                 posterImage={this.state.image}
                 isPremiumUser={this.props.isPremiumUser}
                 getFileForShare={(file) => {
-                  this.setState({ file });
+                  if (this._isMount) {
+                    this.setState({ file });
+                  }
                 }}
               />
             )}
@@ -181,7 +185,8 @@ class Vimeo extends React.Component {
 
 export default (props) => {
   const rollbar = React.useContext(Context.RollbarLoggerContext);
-  return <Vimeo {...props} rollbarLogger={rollbar} />;
+  const adsConsent = React.useContext(Context.AdsConsentContext);
+  return <Vimeo {...props} adsConsent={adsConsent} rollbarLogger={rollbar} />;
 };
 
 const styles = StyleSheet.create({

@@ -10,28 +10,43 @@ import {
 //custom imports
 import { Icons, Download } from "../../utils";
 import useRewardAdsHook from "../../hooks/Ads/useRewardAd";
+import Toast from "../Toast";
 
 const ButtonWithAd = ({
   url,
   showIconOnly = false,
   isPremiumUser = false,
   getFileForShare,
+  hideAllDownloadButtons,
+  adConsentStatus,
 }) => {
   const [loadingAd, setLoadingAd] = React.useState(false);
   const [downloadingStarted, setDownloadingStarted] = React.useState(false);
-  const [loadAd, showAd, rewardAdEventHandler] = useRewardAdsHook();
+  const [
+    loadAd,
+    showAd,
+    rewardAdEventHandler,
+    getRewardAdInstance,
+  ] = useRewardAdsHook();
+  const instance = React.useRef(getRewardAdInstance(adConsentStatus));
+  console.log({ Ad: adConsentStatus });
   React.useEffect(() => {
     let eventHandler;
     if (!isPremiumUser) {
       eventHandler = rewardAdEventHandler(
+        instance.current,
         () => {
-          showAd();
+          showAd(instance.current);
         },
         () => {
           //User Earned Reward.
           setLoadingAd(false);
           setDownloadingStarted(true);
           downloadVideo();
+          if (typeof hideAllDownloadButtons === "function") {
+            hideAllDownloadButtons();
+          }
+          Toast("Download Started", "LONG");
         },
         () => {
           //closed Ad
@@ -42,6 +57,10 @@ const ButtonWithAd = ({
           setLoadingAd(false);
           setDownloadingStarted(true);
           downloadVideo();
+          if (typeof hideAllDownloadButtons === "function") {
+            hideAllDownloadButtons();
+          }
+          Toast("Download Started", "LONG");
         }
       );
     }
@@ -55,17 +74,21 @@ const ButtonWithAd = ({
       }
     };
     //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rewardAdEventHandler, showAd, isPremiumUser]);
+  }, []);
 
   const downloadVideo = () => {
     Download(
       url,
       (file) => {
         getFileForShare(file);
-        setDownloadingStarted(false);
+        if (!showIconOnly) {
+          setDownloadingStarted(false);
+        }
       },
       () => {
-        setDownloadingStarted(false);
+        if (!showIconOnly) {
+          setDownloadingStarted(false);
+        }
       }
     );
   };
@@ -74,7 +97,7 @@ const ButtonWithAd = ({
       downloadVideo();
     } else {
       setLoadingAd(true);
-      loadAd();
+      loadAd(instance.current);
     }
   };
   if (showIconOnly) {
