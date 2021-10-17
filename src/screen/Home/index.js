@@ -5,7 +5,6 @@ import { View, StyleSheet, Text } from "react-native";
 
 //custom imports;
 import { DownloadButton, Header, IconButton } from "./components";
-import { PricingButton } from "../PricingModal/components";
 
 export default function App({ navigation, isPremiumUser }) {
   return (

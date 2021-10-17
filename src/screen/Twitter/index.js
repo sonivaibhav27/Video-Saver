@@ -158,6 +158,9 @@ class Twitter extends React.Component {
                     return (
                       <WatchVideoToDownload.WrapperWatchAdButton>
                         <WatchVideoToDownload.AdButton
+                          getFileForShare={(fileName) => {
+                            this.setState({ file: fileName });
+                          }}
                           isPremiumUser={this.props.isPremiumUser}
                           url={data["hd"] != null ? data["hd"] : data["sd"]}
                         />
@@ -178,6 +181,7 @@ class Twitter extends React.Component {
             </View>
           )}
         </View>
+
         {this.state.sharePress && (
           <View style={styles.indicatorContainer}>
             <CustomActivityIndicator text="loading..." />

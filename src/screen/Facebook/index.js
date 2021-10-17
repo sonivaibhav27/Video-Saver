@@ -232,6 +232,9 @@ class Facebook extends React.Component {
                     return (
                       <WatchVideoToDownload.WrapperWatchAdButton key={entry[0]}>
                         <WatchVideoToDownload.AdButton
+                          getFileForShare={(fileName) => {
+                            this.setState({ file: fileName });
+                          }}
                           isPremiumUser={this.props.isPremiumUser}
                           url={entry[1]}
                         />

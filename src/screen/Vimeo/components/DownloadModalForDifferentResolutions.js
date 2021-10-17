@@ -19,10 +19,13 @@ const DownloadModalForDifferentVideoResolutions = ({
   hideModal,
   posterImage,
   isPremiumUser,
+  getFileForShare,
 }) => {
   const downloadVimeo = (url) => {
     hideModal();
-    Download(url);
+    Download(url, (file) => {
+      getFileForShare(file);
+    });
   };
   return (
     <View style={styles.modalContainer}>
@@ -62,6 +65,7 @@ const DownloadModalForDifferentVideoResolutions = ({
                       showIconOnly
                       url={item.url}
                       isPremiumUser={isPremiumUser}
+                      getFileForShare={getFileForShare}
                     />
                   ) : (
                     <TouchableOpacity

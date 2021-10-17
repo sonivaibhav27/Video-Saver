@@ -149,7 +149,7 @@ class Vimeo extends React.Component {
             We are currently supporting only public videos of vimeo platform.
           </Text>
 
-          <AdsHook.BannerAd show={this.state.data.length >= 0} />
+          <AdsHook.BannerAd show={this.state.data.length === 0} />
 
           {this.state.file.length > 0 && (
             <View style={styles.align_margin}>
@@ -160,14 +160,19 @@ class Vimeo extends React.Component {
               />
             </View>
           )}
-          {this.state.data.length > 0 && this.state.show && (
-            <DownloadModalForDifferentVideoResolutions
-              data={this.state.data}
-              hideModal={this.hideModal}
-              posterImage={this.state.image}
-              isPremiumUser={this.props.isPremiumUser}
-            />
-          )}
+          {this.state.data.length > 0 &&
+            this.state.show &&
+            this.state.file.length === 0 && (
+              <DownloadModalForDifferentVideoResolutions
+                data={this.state.data}
+                hideModal={this.hideModal}
+                posterImage={this.state.image}
+                isPremiumUser={this.props.isPremiumUser}
+                getFileForShare={(file) => {
+                  this.setState({ file });
+                }}
+              />
+            )}
         </View>
       </Transitioning.View>
     );

@@ -10,7 +10,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 //custom imports
 import { Toast } from "../../common";
-import { Icons, QonversionInApp } from "../../utils";
+import { Icons } from "../../utils";
 import { PRIVACY_POLICY } from "../../config";
 
 const ICON_SIZE = 25;
@@ -57,9 +57,9 @@ export default () => {
     navigation.navigate("help");
   };
 
-  const restorePurchase = () => {
-    QonversionInApp.restorePayment();
-  };
+  // const restorePurchase = () => {
+  //   QonversionInApp.restorePayment();
+  // };
 
   return (
     <View style={styles.container}>

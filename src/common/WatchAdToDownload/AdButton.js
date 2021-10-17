@@ -11,13 +11,18 @@ import {
 import { Icons, Download } from "../../utils";
 import useRewardAdsHook from "../../hooks/Ads/useRewardAd";
 
-const ButtonWithAd = ({ url, showIconOnly = false, isPremiumUser = false }) => {
+const ButtonWithAd = ({
+  url,
+  showIconOnly = false,
+  isPremiumUser = false,
+  getFileForShare,
+}) => {
   const [loadingAd, setLoadingAd] = React.useState(false);
   const [downloadingStarted, setDownloadingStarted] = React.useState(false);
   const [loadAd, showAd, rewardAdEventHandler] = useRewardAdsHook();
   React.useEffect(() => {
     let eventHandler;
-    if (isPremiumUser) {
+    if (!isPremiumUser) {
       eventHandler = rewardAdEventHandler(
         () => {
           showAd();
@@ -35,6 +40,8 @@ const ButtonWithAd = ({ url, showIconOnly = false, isPremiumUser = false }) => {
         () => {
           //error while loading ad.
           setLoadingAd(false);
+          setDownloadingStarted(true);
+          downloadVideo();
         }
       );
     }
@@ -47,20 +54,21 @@ const ButtonWithAd = ({ url, showIconOnly = false, isPremiumUser = false }) => {
         eventHandler();
       }
     };
-    //
-  }, [rewardAdEventHandler, showAd, downloadVideo, isPremiumUser]);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rewardAdEventHandler, showAd, isPremiumUser]);
 
-  const downloadVideo = React.useCallback(() => {
+  const downloadVideo = () => {
     Download(
       url,
-      () => {
+      (file) => {
+        getFileForShare(file);
         setDownloadingStarted(false);
       },
       () => {
         setDownloadingStarted(false);
       }
     );
-  }, [url]);
+  };
   const onPress = () => {
     if (isPremiumUser) {
       downloadVideo();
