@@ -364,7 +364,8 @@ class Instagram extends Component {
           show={
             this.state.instagramResult.url.length === 0 &&
             !this.state.showInstaWarning &&
-            !this.state.showInstaLogin
+            !this.state.showInstaLogin &&
+            this.state.file.length === 0
           }
         />
 

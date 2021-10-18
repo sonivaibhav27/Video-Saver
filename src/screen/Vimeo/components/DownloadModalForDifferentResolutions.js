@@ -51,12 +51,14 @@ const DownloadModalForDifferentVideoResolutions = ({
                   />
                   <View style={styles.margin5}>
                     <View style={styles.flexRowAndAlignCenter}>
-                      <Text style={styles.videoQualityText}>{item.q}</Text>
-                      {item.q >= 720 && <Text style={styles.hdTag}>HD</Text>}
+                      <Text style={styles.videoQualityText}>{item.q}p</Text>
                     </View>
-                    <Text style={styles.videoWidthAndHeightText}>
+                    {item.q >= 720 && (
+                      <Text style={styles.hdTag}>HD (watch ad )</Text>
+                    )}
+                    {/* <Text style={styles.videoWidthAndHeightText}>
                       {item.width} x {item.height}
-                    </Text>
+                    </Text> */}
                   </View>
                 </View>
                 <View style={styles.flexRowAndAlignCenter}>
@@ -135,10 +137,9 @@ const styles = StyleSheet.create({
   },
   flexRowAndAlignCenter: { flexDirection: "row", alignItems: "center" },
   posterImageStyle: { height: 50, width: 50, borderRadius: 5 },
-  videoQualityText: { fontWeight: "800", fontSize: 18 },
+  videoQualityText: { fontWeight: "800", fontSize: 15 },
   margin5: { marginLeft: 5 },
   flex1: { flex: 1 },
-  videoWidthAndHeightText: { fontWeight: "600" },
   downloadButtonContainer: {
     padding: 10,
     backgroundColor: "#000",
@@ -155,11 +156,11 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   hdTag: {
-    marginLeft: 5,
     backgroundColor: "#4e28a6",
     padding: 4,
     color: "#fff",
     borderRadius: 4,
+    fontWeight: "700",
   },
 });
 export default DownloadModalForDifferentVideoResolutions;

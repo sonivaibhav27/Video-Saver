@@ -209,7 +209,7 @@ class Facebook extends React.Component {
           whenToShowLoadingIndicator={loading}
           urlLink={link}
         />
-        {file.length > 0 ? (
+        {file.length > 0 && (
           <View style={styles.marginTopAndAlignCenter}>
             <ShareVideo
               shareDone={this.shareDone}
@@ -217,9 +217,9 @@ class Facebook extends React.Component {
               uri={`file:///${DownloadLocation}/${this.state.file}.mp4`}
             />
           </View>
-        ) : (
-          <AdsHook.BannerAd />
         )}
+        <AdsHook.BannerAd show={data === null && file.length === 0} />
+
         <View style={styles.spacing} />
         <View style={styles.downloadContainer}>
           {data != null && data.sd != null && file.length === 0 && (

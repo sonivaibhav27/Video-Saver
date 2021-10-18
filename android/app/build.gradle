@@ -148,8 +148,8 @@ android {
         applicationId "com.vidownranuja"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 127
-        versionName "6.4.8-release-samsung"
+        versionCode 129
+        versionName "6.4.10-release-samsung"
         multiDexEnabled true
     }
     splits {

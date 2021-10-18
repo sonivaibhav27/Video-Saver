@@ -108,7 +108,7 @@ const ButtonWithAd = ({
         style={styles.showIconOnlyContainer}
       >
         {!loadingAd ? (
-          <Icons.Entypo name="video" size={16} color="white" />
+          <Icons.Entypo name="download" size={16} color="white" />
         ) : (
           <View style={styles.btnContainer}>
             <ActivityIndicator size="small" color="#fff" />
@@ -126,11 +126,14 @@ const ButtonWithAd = ({
       {!loadingAd ? (
         <View style={styles.btnContainer}>
           {!downloadingStarted && (
-            <Icons.Entypo name="video" size={16} color="white" />
+            <Icons.Entypo name="download" size={16} color="white" />
           )}
           <Text style={styles.textStyle}>
-            {!downloadingStarted ? "Hd Video" : "downloading..."}
+            {!downloadingStarted ? `Hd` : "downloading..."}
           </Text>
+          {!downloadingStarted && (
+            <Text style={styles.watchAdText}>(Watch Ad to Download)</Text>
+          )}
         </View>
       ) : (
         <View style={styles.btnContainer}>
@@ -162,6 +165,12 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 100,
     backgroundColor: "#4e28a6",
+  },
+  watchAdText: {
+    fontSize: 13,
+    color: "#fff",
+    marginLeft: 5,
+    fontWeight: "700",
   },
 });
 
