@@ -40,13 +40,15 @@ class VideoDownloadButton extends React.PureComponent {
       });
   };
   downloadVideo = async () => {
+    if (!this.props.isPremiumUser && this.props.isUserConsentAvaialable) {
+      try {
+        this.props.showAd();
+      } catch (err) {}
+    }
     this.setState({ text: "Downloading..." });
     Download(
       this.props.url,
       (fileName) => {
-        if (!this.props.isPremiumUser) {
-          this.props.showAd();
-        }
         if (this._isMounted) {
           this.setState({ text: "Downloaded" }, () => {
             this.props.getFileForShare(fileName);
@@ -112,7 +114,7 @@ export default (props) => {
   const adsConsent = React.useContext(Context.AdsConsentContext);
   React.useEffect(() => {
     let event;
-    if (!props.isPremiumUser) {
+    if (!props.isPremiumUser && adsConsent != null && adsConsent != 0) {
       interestialAd.interestitialModifiedForEEA(adsConsent);
       interestialAd.loadAd();
       event = interestialAd.eventHandler(() => {
@@ -128,5 +130,11 @@ export default (props) => {
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <VideoDownloadButton {...props} showAd={interestialAd.showAd} />;
+  return (
+    <VideoDownloadButton
+      {...props}
+      isUserConsentAvaialable={adsConsent != null && adsConsent != 0}
+      showAd={interestialAd.showAd}
+    />
+  );
 };

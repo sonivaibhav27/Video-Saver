@@ -209,7 +209,8 @@ class PrivateVideo extends React.Component {
         <AdsHook.BannerAd
           show={
             this.state.pinterestResult.url.length === 0 &&
-            Object.keys(this.state.pinUrl).length === 0
+            Object.keys(this.state.pinUrl).length === 0 &&
+            this.state.file.length === 0
           }
         />
 
