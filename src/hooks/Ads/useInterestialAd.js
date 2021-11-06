@@ -8,7 +8,7 @@ import {
 
 const AdsId = __DEV__
   ? TestIds.INTERSTITIAL
-  : "ca-app-pub-2540765935808056/1472617431";
+  : "ca-app-pub-2540765935808056/8285435198";
 export default () => {
   const interstitial = React.useRef(null);
   React.useEffect(() => {

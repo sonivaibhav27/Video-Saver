@@ -10,7 +10,7 @@ import { Context } from "../../config";
 
 const BannerID = __DEV__
   ? TestIds.BANNER
-  : "ca-app-pub-2540765935808056/5582621943";
+  : "ca-app-pub-2540765935808056/3990966960";
 export default ({ show = true }) => {
   const adConsumer = React.useContext(Context.AdsConsentContext);
   console.log({
