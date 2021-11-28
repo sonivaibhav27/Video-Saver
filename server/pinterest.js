@@ -1,5 +1,5 @@
 import cheerio from "cheerio";
-import { ToastAndroid } from "react-native";
+import { Toast } from "../src/common";
 
 const header = {
   headers: {
@@ -9,10 +9,12 @@ const header = {
   redirect: "follow",
   crediantials: "omit",
 };
+
 export default (url) => {
   return new Promise((resolve, reject) => {
-    async function getResult(retryTimeout, timeout) {
+    const makeRequestToPinterest = async (retryTimeout, timeout) => {
       try {
+        //making request.
         let firstFetch = await fetch(url, header);
         const extractRedirectedUrl = firstFetch.url;
         if (url.indexOf("pinterest") === -1) {
@@ -24,133 +26,28 @@ export default (url) => {
             header
           );
         }
-        clearTimeout(retryTimeout);
-        clearTimeout(timeout);
 
-        const getHtmlText = await firstFetch.text();
-        const $ = cheerio.load(getHtmlText);
-        const getScript = $("script[id='initial-state']").get()[0].children[0]
-          .data;
-        // console.log(getScript);
-        const contentToJson = JSON.parse(getScript);
-        console.log(contentToJson);
-        const responseFromPins = contentToJson.pins;
-        const urls = [];
-        if (contentToJson.storyPins) {
-          const responseFromStoryPins = contentToJson.storyPins;
+        //Getting Html;
+        const html = await firstFetch.text();
+        const $ = cheerio.load(html);
 
-          const getStoryPinId = Object.keys(responseFromStoryPins);
-          if (getStoryPinId.length) {
-            console.log({ response: responseFromStoryPins[getStoryPinId[0]] });
-            const pages = responseFromStoryPins[getStoryPinId[0]].pages;
-
-            console.log({
-              url: pages,
-            });
-
-            pages.forEach((page) => {
-              const endpoint = page.blocks[0].video?.video_list.V_EXP7;
-              if (endpoint !== undefined) {
-                urls.push({
-                  video: endpoint.url,
-                  poster_image: endpoint.thumbnail,
-                });
-              }
-            });
-            if (urls.length === 1) {
-              resolve({
-                url: urls[0].video,
-                isMultiple: false,
-              });
-            } else if (urls.length > 1) {
-              resolve({
-                url: urls,
-                isMultiple: true,
-              });
-            }
-          }
-        }
-
-        const fromPinResources = contentToJson.resources;
-        console.log(fromPinResources);
-        if (Object.keys(fromPinResources).length > 0) {
-          if (fromPinResources.UserResource) {
-            if (fromPinResources.UserResource["user_id=null"]?.error?.message) {
-              reject({
-                err: "No Videos found.",
-              });
-            }
-          }
-          if (fromPinResources.PinResource) {
-            const key = Object.keys(fromPinResources.PinResource);
-            if (key.length) {
-              const dataNode = fromPinResources.PinResource[key].data;
-              if (
-                dataNode !== undefined &&
-                dataNode != null &&
-                dataNode.videos != null &&
-                dataNode.videos.video_list != null
-              ) {
-                Object.values(dataNode.videos.video_list).forEach((item) => {
-                  if (item.url && item.url.indexOf(".mp4") !== -1) {
-                    console.log({
-                      url: item.url,
-                    });
-                    urls.push(item.url);
-                  }
-                });
-              }
-            }
-          }
-        }
-        if (urls.length === 1) {
-          resolve({
-            url: urls[0],
-            isMultiple: false,
-          });
-        } else if (urls.length > 1) {
-          resolve({
-            url: urls,
-            isMultiple: true,
-          });
-        }
-        console.log({ urls });
-
-        console.log("Here");
-        const keysOfResponseFromPins = Object.keys(responseFromPins);
-        if (keysOfResponseFromPins.length) {
-          const videos_ = responseFromPins[keysOfResponseFromPins[0]].videos;
-          console.log({ videos_ });
-          if (videos_) {
-            Object.values(videos_.video_list).forEach((item) => {
-              if (item.url && item.url.indexOf(".mp4") !== -1) {
-                console.log({
-                  url: item.url,
-                });
-                urls.push({
-                  url: item.url,
-                });
-              }
-            });
-          } else {
-            reject({ err: "No video found." });
-          }
-        }
-        if (urls.length === 1) {
-          resolve({
-            url: urls[0],
-            isMultiple: false,
-          });
-        } else if (urls.length > 1) {
-          resolve({
-            url: urls,
-            isMultiple: true,
-          });
+        //script tags where video can be present.
+        let scriptTag = $("script[id='initial-state']").get()[0]?.children[0]
+          ?.data;
+        let convertToJson, responseEndPoint;
+        if (scriptTag === undefined) {
+          scriptTag = $("script[id='__PWS_DATA__']").get()[0].children[0].data;
+          convertToJson = JSON.parse(scriptTag);
+          responseEndPoint = convertToJson.props.initialReduxState;
+          extractVideo(responseEndPoint, resolve, reject);
         } else {
-          reject({ err: "No Video found" });
+          convertToJson = JSON.parse(scriptTag);
+          responseEndPoint = convertToJson;
+          extractVideo(responseEndPoint, resolve, reject);
         }
+
+        //request here.
       } catch (err) {
-        console.log(err);
         clearTimeout(retryTimeout);
         clearTimeout(timeout);
         if (err.message === "Network request failed") {
@@ -165,8 +62,7 @@ export default (url) => {
           });
         }
       }
-    }
-
+    };
     if (url.startsWith("https://pin.it/") || url.indexOf("pinterest") !== -1) {
       const timeout = setTimeout(() => {
         clearTimeout(timeout);
@@ -178,20 +74,132 @@ export default (url) => {
       }, 40000);
 
       const retry = setTimeout(() => {
-        ToastAndroid.showWithGravityAndOffset(
-          "detected slow internet, trying again...",
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-          0,
-          20
-        );
-        getResult(retry, timeout);
+        Toast("detected slow internet, trying again...");
+        makeRequestToPinterest(retry, timeout);
       }, 20000);
-      getResult(retry, timeout);
+      makeRequestToPinterest(retry, timeout);
     } else {
       reject({
         err: "Link is Invalid,Link should look like these  https://pin.it/ ",
       });
     }
   });
+};
+
+const extractVideo = (responsePins, resolve, reject) => {
+  const urls = [];
+  if (responsePins.storyPins) {
+    const responseFromStoryPins = responsePins.storyPins;
+
+    const getStoryPinId = Object.keys(responseFromStoryPins);
+    if (getStoryPinId.length) {
+      console.log({ response: responseFromStoryPins[getStoryPinId[0]] });
+      const pages = responseFromStoryPins[getStoryPinId[0]].pages;
+
+      console.log({
+        url: pages,
+      });
+
+      pages.forEach((page) => {
+        const endpoint = page.blocks[0].video?.video_list.V_EXP7;
+        if (endpoint !== undefined) {
+          urls.push({
+            video: endpoint.url,
+            poster_image: endpoint.thumbnail,
+          });
+        }
+      });
+      if (urls.length === 1) {
+        resolve({
+          url: urls[0].video,
+          isMultiple: false,
+        });
+      } else if (urls.length > 1) {
+        resolve({
+          url: urls,
+          isMultiple: true,
+        });
+      }
+    }
+  }
+
+  const responseFromResources = responsePins.resources;
+  console.log(responseFromResources);
+  if (Object.keys(responseFromResources).length > 0) {
+    if (responseFromResources.UserResource) {
+      if (responseFromResources.UserResource["user_id=null"]?.error?.message) {
+        reject({
+          err: "No Videos found.",
+        });
+      }
+    }
+    if (responseFromResources.PinResource) {
+      const key = Object.keys(responseFromResources.PinResource);
+      if (key.length) {
+        const dataNode = responseFromResources.PinResource[key].data;
+        if (
+          dataNode !== undefined &&
+          dataNode != null &&
+          dataNode.videos != null &&
+          dataNode.videos.video_list != null
+        ) {
+          Object.values(dataNode.videos.video_list).forEach((item) => {
+            if (item.url && item.url.indexOf(".mp4") !== -1) {
+              console.log({
+                url: item.url,
+              });
+              urls.push(item.url);
+            }
+          });
+        }
+      }
+    }
+  }
+  if (urls.length === 1) {
+    resolve({
+      url: urls[0],
+      isMultiple: false,
+    });
+  } else if (urls.length > 1) {
+    resolve({
+      url: urls,
+      isMultiple: true,
+    });
+  }
+  console.log({ urls });
+
+  console.log("Here");
+  const keysOfResponseFromPins = Object.keys(responsePins.pins);
+  if (keysOfResponseFromPins.length) {
+    const videos_ = responsePins[keysOfResponseFromPins[0]].videos;
+    console.log({ videos_ });
+    if (videos_) {
+      Object.values(videos_.video_list).forEach((item) => {
+        if (item.url && item.url.indexOf(".mp4") !== -1) {
+          console.log({
+            url: item.url,
+          });
+          urls.push({
+            url: item.url,
+          });
+        }
+      });
+    } else {
+      reject({ err: "No video found." });
+    }
+  }
+
+  if (urls.length === 1) {
+    resolve({
+      url: urls[0],
+      isMultiple: false,
+    });
+  } else if (urls.length > 1) {
+    resolve({
+      url: urls,
+      isMultiple: true,
+    });
+  } else {
+    reject({ err: "No Video found" });
+  }
 };

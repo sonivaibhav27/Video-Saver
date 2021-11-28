@@ -20,14 +20,14 @@ export default (url, successCallback, errorCallback) => {
     .fetch("GET", url, { "Cache-Control": "no-store" })
     .then((res) => {
       // the temp file path with file extension `png`
-      Toast(res.path());
+      Toast("Video Successfully Downloaded.");
       if (typeof successCallback === "function") {
         successCallback(fileName);
       }
     })
-    .catch((_) => {
-      rollbar.warning(url);
-      console.log(_);
+    .catch((err) => {
+      rollbar.warning(`Download Error ${url} ${JSON.stringify(err)}`);
+      console.log(err);
       if (typeof errorCallback === "function") {
         errorCallback();
       }

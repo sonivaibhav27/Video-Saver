@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "release": "react-native run-android --variant=release",
     "restart": "adb reverse tcp:8081 tcp:8081",
-    "update": "appcenter codepush release-react -a vidowndownload-gmail.com/Vidown -m -d Production  --target-binary-version \"6.4.10-release-samsung\" --description \"Show Ad on Click Download , and  provided extra layer for banner ad show or hide. \""
+    "update": "appcenter codepush release-react -a vidowndownload-gmail.com/Vidown -m -d Production  --target-binary-version \"6.4.10-dev-google-play\" --description \"Pinterest video download problem.\""
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
