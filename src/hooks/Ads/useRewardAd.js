@@ -11,7 +11,7 @@ import { Toast } from "../../common";
 // const AdsId = "ca-app-pub-2540765935808056~2490457734";
 const AdsId = __DEV__
   ? TestIds.REWARDED
-  : "ca-app-pub-2540765935808056/5819038047";
+  : "ca-app-pub-2540765935808056/8558563633";
 
 const useRewardAdsHook = () => {
   const eventHandler = (

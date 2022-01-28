@@ -168,8 +168,68 @@ class Instagram extends Component {
             return data.json();
           })
           .then((response) => {
-            console.log(response);
-            if (Object.keys(response).length > 0) {
+            if (
+              typeof response === "object" &&
+              response.hasOwnProperty("items")
+            ) {
+              if (typeof response.items[0].carousel_media !== "undefined") {
+                if (
+                  typeof response.items[0].carousel_media[0].video_versions ===
+                  "undefined"
+                ) {
+                  Toast("No Videos Found.");
+                  return;
+                }
+                let urlOfVideos = [];
+                response.items[0].carousel_media.map((item) => {
+                  if (item.hasOwnProperty("video_versions")) {
+                    urlOfVideos.push({
+                      video: item.video_versions[0].url,
+                      poster_image: item.image_versions2?.candidates[0]?.url,
+                      is_video: true,
+                    });
+                  }
+                });
+                let sendToReact = {
+                  url: urlOfVideos,
+                  isMultiple: true,
+                };
+                if (urlOfVideos.length === 0) {
+                  Toast("Found multiple images only.");
+                  if (this._isMount) {
+                    this.setState({ loading: false });
+                  }
+                  return;
+                }
+                if (this._isMount) {
+                  // this.ref.animateNextTransition();
+                  this.setState({
+                    instagramResult: {
+                      ...sendToReact,
+                    },
+                    isDataArrive: false,
+                  });
+                }
+                return;
+              }
+              if (typeof response.items[0].video_versions === "undefined") {
+                Toast("No Videos Found.");
+                return;
+              }
+              let items = response.items[0];
+              if (this._isMount) {
+                this.setState({
+                  isDataArrive: false,
+                  instagramResult: {
+                    url: [
+                      items.video_versions[0].url,
+                      items.image_versions2?.candidates[0]?.url,
+                    ],
+                    isMultiple: false,
+                  },
+                });
+              }
+            } else if (Object.keys(response).length > 0) {
               let data = response.graphql.shortcode_media;
               if (data.is_video) {
                 if (this._isMount) {
