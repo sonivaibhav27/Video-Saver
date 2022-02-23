@@ -4,13 +4,11 @@ import {
   BannerAd,
   BannerAdSize,
   TestIds,
-} from "@react-native-firebase/admob";
+} from "react-native-google-mobile-ads";
 import { StyleSheet, View } from "react-native";
 import { Context } from "../../config";
 
-const BannerID = __DEV__
-  ? TestIds.BANNER
-  : "ca-app-pub-2540765935808056/2548345593";
+const BannerID = "ca-app-pub-2540765935808056/2548345593";
 export default ({ show = true }) => {
   const adConsumer = React.useContext(Context.AdsConsentContext);
   console.log({
@@ -21,7 +19,10 @@ export default ({ show = true }) => {
       <View style={styles.align_margin}>
         <BannerAd
           unitId={BannerID}
-          size={BannerAdSize.MEDIUM_RECTANGLE}
+          size={BannerAdSize.ADAPTIVE_BANNER}
+          onAdFailedToLoad={(err) => {
+            console.log(err);
+          }}
           requestOptions={{
             requestNonPersonalizedAdsOnly:
               AdsConsentStatus.NON_PERSONALIZED === adConsumer,

@@ -8,7 +8,7 @@ export default ({ children }) => {
   React.useEffect(() => {
     timeout.current = setTimeout(() => {
       Toast("Please reopen the app, as it is taking more time to load", "LONG");
-    }, 20000);
+    }, 40000);
     return () => {
       clearTimeout(timeout.current);
     };

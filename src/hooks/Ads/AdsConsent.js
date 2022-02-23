@@ -3,8 +3,11 @@ import {
   AdsConsent,
   AdsConsentDebugGeography,
   AdsConsentStatus,
-} from "@react-native-firebase/admob";
+} from "react-native-google-mobile-ads";
 import { PRIVACY_POLICY } from "../../config";
+import { NativeModules } from "react-native";
+const { CustomNativeModule } = NativeModules;
+
 export default () => {
   const [userConsentStatus, setUserConsentStatus] = React.useState(null);
   React.useEffect(() => {
@@ -56,6 +59,11 @@ export default () => {
           console.log({ status });
           if (status === AdsConsentStatus.UNKNOWN) {
             const formResult = await showAdConsentForm();
+            if (formResult.status === AdsConsentStatus.UNKNOWN) {
+              CustomNativeModule.setAppLovinConsent(false);
+            } else {
+              CustomNativeModule.setAppLovinConsent(true);
+            }
             setUserConsentStatus(formResult.status);
           } else {
             setUserConsentStatus(status);

@@ -11,7 +11,6 @@ apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 
 apply plugin: "com.android.application"
-apply plugin: 'com.google.gms.google-services'
 import com.android.build.OutputFile
 
 /**
@@ -148,8 +147,8 @@ android {
         applicationId "com.vidownranuja"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 134
-        versionName "6.4.13-dev"
+        versionCode 135
+        versionName "6.4.13-release"
         multiDexEnabled true
     }
     splits {
@@ -222,6 +221,10 @@ dependencies {
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }
+    implementation 'com.google.android.gms:play-services-ads:20.5.0'
+    implementation 'com.google.ads.mediation:applovin:11.1.0.0'
+    implementation 'com.google.ads.mediation:facebook:6.8.0.0'
+
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

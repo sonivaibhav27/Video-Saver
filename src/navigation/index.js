@@ -55,7 +55,11 @@ class Navigation extends React.Component {
       }
     });
   };
+  _initializeAd = () => {
+    AdsHook.InitializeAd();
+  };
   componentDidMount() {
+    this._initializeAd();
     this.clearCookieForFirstTime();
     // this.checkIfUserIsPremium();
     PermissionsAndroid.check(

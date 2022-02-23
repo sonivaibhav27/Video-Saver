@@ -4,7 +4,7 @@ import {
   AdsConsentStatus,
   InterstitialAd,
   TestIds,
-} from "@react-native-firebase/admob";
+} from "react-native-google-mobile-ads";
 
 const AdsId = __DEV__
   ? TestIds.INTERSTITIAL

@@ -4,7 +4,7 @@ import {
   RewardedAd,
   RewardedAdEventType,
   TestIds,
-} from "@react-native-firebase/admob";
+} from "react-native-google-mobile-ads";
 
 //custom imports
 import { Toast } from "../../common";
