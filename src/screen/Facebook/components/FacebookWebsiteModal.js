@@ -96,6 +96,23 @@ const FacebookWebsite = ({
         },
       ]}
     >
+      <View style={styles.wContainter}>
+        {!isLoggedIn && (
+          <Text style={styles.wText}>Login to download the video</Text>
+        )}
+        <TouchableOpacity
+          onPress={onCrossModal}
+          style={styles.crossContainer}
+          hitSlop={{
+            top: 5,
+            left: 5,
+            bottom: 5,
+            right: 5,
+          }}
+        >
+          <Icons.Entypo name="cross" size={20} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.subContainer}>
         {isLoggedIn && (
           <TouchableOpacity
@@ -105,30 +122,14 @@ const FacebookWebsite = ({
           >
             {/* eslint-disable-next-line react-native/no-raw-text */}
             <Text style={styles.unableText}>
-              Unable to download the video (If Green download button doesn't
-              apper after login on the bottom right corner.), Go to download
+              Unable to download the video or Can't See the video in the website
+              below or Green Download Button Doesn't appear, Go to download
               error issue.
               <Icons.Entypo name="chevron-right" size={20} />
             </Text>
           </TouchableOpacity>
         )}
-        <View style={styles.wContainter}>
-          {!isLoggedIn && (
-            <Text style={styles.wText}>Login to download the video</Text>
-          )}
-          <TouchableOpacity
-            onPress={onCrossModal}
-            style={styles.crossContainer}
-            hitSlop={{
-              top: 5,
-              left: 5,
-              bottom: 5,
-              right: 5,
-            }}
-          >
-            <Icons.Entypo name="cross" size={20} />
-          </TouchableOpacity>
-        </View>
+
         <WebView
           ref={webViewRef}
           renderError={() => {
@@ -153,7 +154,7 @@ const FacebookWebsite = ({
           cacheEnabled={false}
           startInLoadingState
           source={{ uri: url }}
-          style={styles.container}
+          style={styles.webview}
           onNavigationStateChange={async (event) => {
             if (
               event.url === "https://m.facebook.com/?_rdr#_=_" ||
@@ -191,6 +192,9 @@ const FacebookWebsite = ({
 };
 
 const styles = StyleSheet.create({
+  webview: {
+    ...StyleSheet.absoluteFill,
+  },
   container: {
     flex: 1,
   },
@@ -207,11 +211,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 3,
-    borderBottomWidth: 1,
     borderColor: "#999",
   },
   crossContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: "#eee",
     padding: 8,
     borderRadius: 50,
   },
@@ -227,9 +230,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 2,
     zIndex: -1,
+    borderWidth: 1,
+    borderColor: "rgba(0, 171, 102, 1)",
   },
   unableText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
   },
 
@@ -240,6 +245,8 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     right: 10,
     bottom: 10,
+    alignItems: "center",
+    position: "absolute",
   },
   indicatorContainer: {
     ...StyleSheet.absoluteFill,

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { View, StyleSheet, Text } from "react-native";
+import { AdsHook } from "../../hooks";
 
 //custom imports;
 import { DownloadButton, Header, IconButton } from "./components";
@@ -69,6 +70,9 @@ export default function App({ navigation, isPremiumUser }) {
           </Text>
         </View>
       </View>
+      <View style={styles.adBanner}>
+        <AdsHook.BannerAd />
+      </View>
     </View>
   );
 }
@@ -94,4 +98,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   infoText: { textAlign: "center", fontWeight: "bold", color: "#000" },
+  adBanner: { flex: 1, justifyContent: "flex-end" },
 });

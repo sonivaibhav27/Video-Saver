@@ -467,12 +467,16 @@ class Instagram extends Component {
                 this.state.file.length <= 0 && (
                   <PreviewVideoButton url={this.state.instagramResult.url[0]} />
                 )}
-              {this.state.instagramResult.url.length > 0 && (
-                <VideoDownloadButton
-                  getFileForShare={this.file}
-                  url={this.state.instagramResult.url[0]}
-                />
-              )}
+              {/* {this.state.instagramResult.url.length > 0 && ( */}
+              <VideoDownloadButton
+                getFileForShare={this.file}
+                url={
+                  this.state.instagramResult.url.length === 0
+                    ? undefined
+                    : this.state.instagramResult.url[0]
+                }
+              />
+              {/* )} */}
             </View>
           </>
         )}

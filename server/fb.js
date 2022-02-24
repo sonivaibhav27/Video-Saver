@@ -169,7 +169,7 @@ export default function downloadFb(url) {
       }, 40000);
       const retry = setTimeout(() => {
         getResult(retry, timeout);
-      }, 20000);
+      }, 10000);
       getResult(retry, timeout);
     } else {
       reject({

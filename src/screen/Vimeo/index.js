@@ -167,6 +167,7 @@ class Vimeo extends React.Component {
             this.state.show &&
             this.state.file.length === 0 && (
               <DownloadModalForDifferentVideoResolutions
+                showAd={this.props.showAd}
                 adsConsentStatus={this.props.adsConsent}
                 data={this.state.data}
                 hideModal={this.hideModal}
@@ -188,7 +189,35 @@ class Vimeo extends React.Component {
 export default (props) => {
   const rollbar = React.useContext(Context.RollbarLoggerContext);
   const adsConsent = React.useContext(Context.AdsConsentContext);
-  return <Vimeo {...props} adsConsent={adsConsent} rollbarLogger={rollbar} />;
+  const interestialAd = AdsHook.useInterestitialAd();
+  React.useEffect(() => {
+    let event;
+    if (!props.isPremiumUser && adsConsent != null && adsConsent !== 0) {
+      interestialAd.interestitialModifiedForEEA(adsConsent);
+      event = interestialAd.eventHandler(() => {
+        // interestialAd.showAd();
+      });
+      interestialAd.loadAd();
+    }
+
+    return () => {
+      if (typeof event !== "undefined") {
+        event();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const showAd = () => {
+    interestialAd.showAd();
+  };
+  return (
+    <Vimeo
+      {...props}
+      showAd={showAd}
+      adsConsent={adsConsent}
+      rollbarLogger={rollbar}
+    />
+  );
 };
 
 const styles = StyleSheet.create({

@@ -40,6 +40,9 @@ class VideoDownloadButton extends React.PureComponent {
       });
   };
   downloadVideo = async () => {
+    if (typeof this.props.url === "undefined") {
+      return;
+    }
     if (!this.props.isPremiumUser && this.props.isUserConsentAvaialable) {
       try {
         this.props.showAd();
@@ -83,8 +86,7 @@ class VideoDownloadButton extends React.PureComponent {
           styles.container,
           // eslint-disable-next-line  react-native/no-inline-styles
           {
-            backgroundColor:
-              this.props.url === undefined ? "rgba(0,0,0,0.3)" : "#333",
+            backgroundColor: this.props.url === undefined ? "#fff" : "#333",
           },
         ]}
       >
@@ -110,16 +112,16 @@ const styles = StyleSheet.create({
 
 export default (props) => {
   const interestialAd = AdsHook.useInterestitialAd();
-
   const adsConsent = React.useContext(Context.AdsConsentContext);
   React.useEffect(() => {
+    console.log("calling....");
     let event;
     if (!props.isPremiumUser && adsConsent != null && adsConsent != 0) {
       interestialAd.interestitialModifiedForEEA(adsConsent);
-      interestialAd.loadAd();
       event = interestialAd.eventHandler(() => {
         // interestialAd.showAd();
       });
+      interestialAd.loadAd();
     }
 
     return () => {
@@ -130,11 +132,16 @@ export default (props) => {
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const showAd = () => {
+    interestialAd.showAd();
+    interestialAd.loadAd();
+  };
+
   return (
     <VideoDownloadButton
       {...props}
       isUserConsentAvaialable={adsConsent != null && adsConsent != 0}
-      showAd={interestialAd.showAd}
+      showAd={showAd}
     />
   );
 };

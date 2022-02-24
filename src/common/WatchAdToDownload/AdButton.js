@@ -30,6 +30,7 @@ const ButtonWithAd = ({
   ] = useRewardAdsHook();
   const instance = React.useRef(getRewardAdInstance(adConsentStatus));
   console.log({ Ad: adConsentStatus });
+  const rewardEarned = React.useRef();
   React.useEffect(() => {
     let eventHandler;
     if (!isPremiumUser) {
@@ -47,10 +48,21 @@ const ButtonWithAd = ({
             hideAllDownloadButtons();
           }
           Toast("Download Started", "LONG");
+          rewardEarned.current = true;
         },
         () => {
           //closed Ad
           setLoadingAd(false);
+          if (rewardEarned.current) {
+            setLoadingAd(false);
+            setDownloadingStarted(true);
+            downloadVideo();
+            if (typeof hideAllDownloadButtons === "function") {
+              hideAllDownloadButtons();
+            }
+            Toast("Download Started", "LONG");
+            rewardEarned.current = false;
+          }
         },
         () => {
           //error while loading ad.

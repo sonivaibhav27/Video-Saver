@@ -55,13 +55,21 @@ const SaveVideoToFacebookModal = ({ closeModal }) => {
         ]}
       >
         <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Solve Download Error</Text>
+          <Text style={styles.titleText}>
+            Solve Download Error Or Reel Download Problem
+          </Text>
         </View>
         <ScrollView style={styles.flex1}>
           <Section
             index={1}
             image={require("../../../assets/sav.jpeg")}
-            label="Saved the video , you wish to download"
+            label="Saved the video , you wish to download and then follow step 2 and 3"
+          />
+          <Text style={styles.or}>OR</Text>
+          <Section
+            index={1}
+            image={require("../../../assets/reel_sav.jpeg")}
+            label="if it is a  reel video , then click on Save Reel. and then follow step 2 and 3"
           />
           <Section
             index={2}
@@ -85,7 +93,10 @@ const SaveVideoToFacebookModal = ({ closeModal }) => {
 };
 
 const styles = StyleSheet.create({
-  absoluteFill: { ...StyleSheet.absoluteFill, backgroundColor: "#fff" },
+  absoluteFill: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "#fff",
+  },
   downloadErrContainer: {
     flex: 1,
     zIndex: 1,
@@ -114,6 +125,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   flex1: { flex: 1 },
+  or: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#000",
+    fontWeight: "700",
+  },
 });
 
 export default SaveVideoToFacebookModal;

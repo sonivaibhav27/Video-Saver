@@ -25,8 +25,10 @@ const DownloadModalForDifferentVideoResolutions = ({
   isPremiumUser,
   getFileForShare,
   adsConsentStatus,
+  showAd,
 }) => {
   const downloadVimeo = (url) => {
+    showAd();
     Toast("Download Started", "LONG");
     hideModal();
     Download(url, (file) => {

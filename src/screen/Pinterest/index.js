@@ -217,24 +217,28 @@ class PrivateVideo extends React.Component {
         {this.state.pinterestResult.isMultiple && (
           <MultipleVideoDownloadModal videos={this.state.pinterestResult.url} />
         )}
-        {Object.keys(this.state.pinUrl).length > 0 &&
-          this.state.file.length === 0 && (
-            <>
-              <View style={styles.dummy} />
-              <View style={styles.iconContainer}>
-                {this.state.pinUrl.url != null &&
-                  this.state.file.length <= 0 && (
-                    <PreviewVideoButton url={this.state.pinUrl.url} />
-                  )}
-                <VideoDownloadButton
-                  getFileForShare={(filName) => {
-                    this.setState({ file: filName });
-                  }}
-                  url={this.state.pinUrl.url}
-                />
-              </View>
-            </>
-          )}
+        {this.state.file.length === 0 && (
+          <>
+            <View style={styles.dummy} />
+            <View style={styles.iconContainer}>
+              {this.state.pinUrl != null &&
+                this.state.pinUrl.url != null &&
+                this.state.file.length <= 0 && (
+                  <PreviewVideoButton url={this.state.pinUrl.url} />
+                )}
+              <VideoDownloadButton
+                getFileForShare={(filName) => {
+                  this.setState({ file: filName });
+                }}
+                url={
+                  Object.keys(this.state.pinUrl).length > 0
+                    ? this.state.pinUrl.url
+                    : undefined
+                }
+              />
+            </View>
+          </>
+        )}
         {this.state.sharePress && (
           <View style={styles.positionAbsolute}>
             <CustomActivityIndicator text="loading..." />

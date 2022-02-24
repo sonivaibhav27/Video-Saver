@@ -42,13 +42,19 @@ const styles = StyleSheet.create({
   padding10: {
     padding: 10,
   },
-  headerContainer: { flexDirection: "row", alignItems: "center" },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    marginRight: 10,
+  },
   labelText: {
     fontSize: 14,
     color: "#222",
     textTransform: "capitalize",
-    fontWeight: "700",
-    textAlign: "center",
+    fontWeight: "600",
+    // textAlign: "center",
+    marginRight: 20,
   },
 });
 

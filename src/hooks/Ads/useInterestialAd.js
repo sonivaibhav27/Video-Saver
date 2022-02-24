@@ -6,11 +6,10 @@ import {
   TestIds,
 } from "react-native-google-mobile-ads";
 
-const AdsId = __DEV__
-  ? TestIds.INTERSTITIAL
-  : "ca-app-pub-2540765935808056/6123971986";
+const AdsId = "ca-app-pub-2540765935808056/6123971986";
 export default () => {
   const interstitial = React.useRef(null);
+
   React.useEffect(() => {
     interstitial.current = InterstitialAd.createForAdRequest(AdsId, {
       requestNonPersonalizedAdsOnly: false,
@@ -46,15 +45,20 @@ export default () => {
     [interstitial]
   );
   const loadAd = () => {
+    console.log(interstitial.current.loaded);
     try {
-      interstitial.current.load();
+      if (!interstitial.current.loaded) {
+        interstitial.current.load();
+      }
     } catch (error) {}
   };
 
   const showAd = () => {
     try {
       interstitial.current.show();
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const interestitialModifiedForEEA = (nonPersonalized) => {

@@ -218,13 +218,22 @@ class Facebook extends React.Component {
             />
           </View>
         )}
-        <AdsHook.BannerAd show={data === null && file.length === 0} />
+        <AdsHook.BannerAd
+          show={data === null && file.length === 0 && !this.state.showFBLogin}
+        />
 
         <View style={styles.spacing} />
         <View style={styles.downloadContainer}>
           {data != null && data.sd != null && file.length === 0 && (
             <PreviewVideoButton url={data.sd} />
           )}
+
+          <VideoDownloadButton
+            getFileForShare={(fileName) => {
+              this.setState({ file: fileName });
+            }}
+            url={data === null ? undefined : data.sd}
+          />
           {data != null && file.length === 0 && (
             <View>
               {Object.entries(data).map((entry) => {
@@ -241,17 +250,6 @@ class Facebook extends React.Component {
                           url={entry[1]}
                         />
                       </WatchVideoToDownload.WrapperWatchAdButton>
-                    );
-                  } else {
-                    return (
-                      <View key={entry[1]}>
-                        <VideoDownloadButton
-                          getFileForShare={(fileName) => {
-                            this.setState({ file: fileName });
-                          }}
-                          url={data === null ? undefined : entry[1]}
-                        />
-                      </View>
                     );
                   }
                 }

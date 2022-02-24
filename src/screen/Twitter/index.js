@@ -152,12 +152,18 @@ class Twitter extends React.Component {
           {data != null && data.sd != null && file.length === 0 && (
             <PreviewVideoButton url={data.sd} />
           )}
+          <VideoDownloadButton
+            getFileForShare={(fileName) => {
+              this.setState({ file: fileName });
+            }}
+            url={data === null ? undefined : data.sd}
+          />
           {data != null && file.length === 0 && (
             <View>
               {Object.entries(data).map((entry) => {
                 if (entry[0] === "hd") {
                   return (
-                    <WatchVideoToDownload.WrapperWatchAdButton>
+                    <WatchVideoToDownload.WrapperWatchAdButton key={entry[0]}>
                       <WatchVideoToDownload.AdButton
                         getFileForShare={(fileName) => {
                           if (this._isMounted) {
@@ -174,15 +180,6 @@ class Twitter extends React.Component {
                         url={data["hd"] != null ? data["hd"] : data["sd"]}
                       />
                     </WatchVideoToDownload.WrapperWatchAdButton>
-                  );
-                } else {
-                  return (
-                    <VideoDownloadButton
-                      getFileForShare={(fileName) => {
-                        this.setState({ file: fileName });
-                      }}
-                      url={data === null ? undefined : entry[1]}
-                    />
                   );
                 }
               })}

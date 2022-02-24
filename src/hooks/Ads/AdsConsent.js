@@ -12,15 +12,15 @@ export default () => {
   const [userConsentStatus, setUserConsentStatus] = React.useState(null);
   React.useEffect(() => {
     (async function () {
-      if (__DEV__) {
-        await AdsConsent.addTestDevices(["3F44BA187AF662C093736ABFE3CD1D46"]);
-        // Production emulator
-        await AdsConsent.addTestDevices(["0582F08BCC86D7B2E3B50E1B53A98478"]);
-        await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
-        await AdsConsent.addTestDevices(["05ADAA36163BF09902D81CCEC9FA322C"]);
-        await AdsConsent.addTestDevices(["3EAEEE69510ACC7BE82166A9D097FC3D"]);
-        await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
-      }
+      // if (__DEV__) {
+      //   await AdsConsent.addTestDevices(["3F44BA187AF662C093736ABFE3CD1D46"]);
+      //   // Production emulator
+      //   await AdsConsent.addTestDevices(["0582F08BCC86D7B2E3B50E1B53A98478"]);
+      //   await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
+      //   await AdsConsent.addTestDevices(["05ADAA36163BF09902D81CCEC9FA322C"]);
+      //   await AdsConsent.addTestDevices(["3EAEEE69510ACC7BE82166A9D097FC3D"]);
+      //   await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
+      // }
       await init();
     })();
     //eslint-disable-next-line react-hooks/exhaustive-deps
