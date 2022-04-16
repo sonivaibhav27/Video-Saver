@@ -1,8 +1,4 @@
 {
   "name": "Video Saver",
-  "displayName": "Video Saver",
-  "react-native-google-mobile-ads": {
-    "android_app_id": "ca-app-pub-2540765935808056~2490457734",
-    "delay_app_measurement_init": true
-  }
+  "displayName": "Video Saver"
 }

@@ -1,90 +1,138 @@
 import React from "react";
 import {
-  AdsConsent,
-  AdsConsentDebugGeography,
-  AdsConsentStatus,
-} from "react-native-google-mobile-ads";
-import { PRIVACY_POLICY } from "../../config";
-import { NativeModules } from "react-native";
-const { CustomNativeModule } = NativeModules;
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Linking,
+} from "react-native";
+import ApplovinMax from "react-native-applovin-max";
 
-export default () => {
-  const [userConsentStatus, setUserConsentStatus] = React.useState(null);
-  React.useEffect(() => {
-    (async function () {
-      // if (__DEV__) {
-      //   await AdsConsent.addTestDevices(["3F44BA187AF662C093736ABFE3CD1D46"]);
-      //   // Production emulator
-      //   await AdsConsent.addTestDevices(["0582F08BCC86D7B2E3B50E1B53A98478"]);
-      //   await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
-      //   await AdsConsent.addTestDevices(["05ADAA36163BF09902D81CCEC9FA322C"]);
-      //   await AdsConsent.addTestDevices(["3EAEEE69510ACC7BE82166A9D097FC3D"]);
-      //   await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
-      // }
-      await init();
-    })();
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const userAdLocationAndStatus = async () => {
-    const userAdInfo = await AdsConsent.requestInfoUpdate([
-      "pub-2540765935808056",
-    ]);
-    return {
-      isLocationInEEA: userAdInfo.isRequestLocationInEeaOrUnknown,
-      status: userAdInfo.status,
-    };
+const ConsentModal = ({ setState }) => {
+  const onYesPress = () => {
+    ApplovinMax.setHasUserConsent(true);
+    setState(true);
   };
-  const getStatus = async () => {
-    const getUserStatus = await AdsConsent.getStatus();
-    return getUserStatus;
+  const onNoPress = () => {
+    ApplovinMax.setHasUserConsent(false);
+    setState(true);
   };
-
-  const init = async () => {
-    try {
-      if (
-        userConsentStatus != null &&
-        userConsentStatus !== AdsConsentStatus.UNKNOWN
-      ) {
-        setUserConsentStatus(userConsentStatus);
-        return;
-      }
-      const userLocationAndStatus = await userAdLocationAndStatus();
-      console.log({
-        userLocationAndStatus,
-      });
-      if (userLocationAndStatus) {
-        if (userLocationAndStatus.isLocationInEEA) {
-          const status = await getStatus();
-          console.log({ status });
-          if (status === AdsConsentStatus.UNKNOWN) {
-            const formResult = await showAdConsentForm();
-            if (formResult.status === AdsConsentStatus.UNKNOWN) {
-              CustomNativeModule.setAppLovinConsent(false);
-            } else {
-              CustomNativeModule.setAppLovinConsent(true);
-            }
-            setUserConsentStatus(formResult.status);
-          } else {
-            setUserConsentStatus(status);
-          }
-        } else {
-          setUserConsentStatus(AdsConsentStatus.PERSONALIZED);
-        }
-      }
-    } catch (error) {
-      console.log(error);
+  const onPrivacyLinkClick = () => {
+    if (Linking.canOpenURL("https://ranuja-apps.github.io/")) {
+      Linking.openURL("https://ranuja-apps.github.io/").catch((err) => {});
     }
   };
-
-  const showAdConsentForm = async () => {
-    const formResult = await AdsConsent.showForm({
-      privacyPolicy: PRIVACY_POLICY,
-      withPersonalizedAds: true,
-      withNonPersonalizedAds: true,
-    });
-    return formResult;
-  };
-
-  return userConsentStatus;
+  return (
+    <View style={styles.container}>
+      <View style={styles.modal}>
+        <Text style={styles.info}>
+          Can we continue to use your data to tailor ads for you?
+        </Text>
+        <Text style={styles.big}>
+          We care about your privacy and security.We keeps this app by showing
+          ads.
+        </Text>
+        <Text style={[styles.info, styles.infoDetail]}>
+          Our Ads Partner may collect your personal data such as device
+          identifiers, location data and other demographic interest to show you
+          relevant ads.
+        </Text>
+        <View>
+          <TouchableOpacity
+            onPress={onYesPress}
+            style={[styles.common, styles.yes]}
+          >
+            <Text style={styles.yesText}>
+              Yes, Continue to use personalized ads
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={onNoPress}
+            style={[styles.common, styles.no]}
+          >
+            <Text style={styles.noText}>
+              No, Continue to use non personalized ads
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View>
+          {/* eslint-disable-next-line react-native/no-raw-text */}
+          <Text style={styles.privacyPolicy}>
+            Learn more at :
+            <Text style={styles.link} onPress={onPrivacyLinkClick}>
+              {" "}
+              Our Privacy Policy{" "}
+            </Text>
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  modal: {
+    padding: 10,
+    elevation: 3,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    paddingVertical: 20,
+    // margin: 20,
+  },
+  info: {
+    fontSize: 14,
+    color: "#000",
+    textAlign: "center",
+    fontWeight: "700",
+  },
+  big: {
+    fontSize: 17,
+    color: "#111",
+    marginVertical: 10,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  infoDetail: {
+    textAlign: "left",
+    fontWeight: "400",
+  },
+  common: {
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  yes: {
+    backgroundColor: "#e95950",
+    marginTop: 20,
+  },
+  yesText: {
+    color: "#fff",
+    fontSize: 15.5,
+    fontWeight: "600",
+  },
+  noText: {
+    color: "#333",
+  },
+  privacyPolicy: {
+    textAlign: "center",
+    marginTop: 10,
+    color: "#222",
+  },
+  link: {
+    color: "#E91E63",
+    textDecorationLine: "underline",
+  },
+});
+
+const useAdsConsentHook = ({ setState }) => {
+  return <ConsentModal setState={setState} />;
+};
+
+export default useAdsConsentHook;

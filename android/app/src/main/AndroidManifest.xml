@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
     <uses-permission android:name="com.android.vending.BILLING" />
+
     <application
         android:networkSecurityConfig="@xml/network_config"
       android:name=".MainApplication"
@@ -14,7 +15,6 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
-      android:requestLegacyExternalStorage="true"
       >
       <activity
         android:name=".MainActivity"
@@ -30,5 +30,9 @@
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
     </application>
+    <queries>
+        <package android:name="com.whatsapp" />
+        <package android:name="com.instagram.android"/>
+    </queries>
 
 </manifest>

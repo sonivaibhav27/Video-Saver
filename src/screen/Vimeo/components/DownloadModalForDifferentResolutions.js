@@ -26,14 +26,37 @@ const DownloadModalForDifferentVideoResolutions = ({
   getFileForShare,
   adsConsentStatus,
   showAd,
+  adHidden,
+  isSanitizedInterstitialAdLoaded,
 }) => {
-  const downloadVimeo = (url) => {
-    showAd();
-    Toast("Download Started", "LONG");
-    hideModal();
-    Download(url, (file) => {
-      getFileForShare(file);
-    });
+  const [url, setUrl] = React.useState(null);
+  React.useEffect(() => {
+    if (adHidden) {
+      if (url === null) {
+        return;
+      }
+      Toast("Download Started", "LONG");
+      hideModal();
+      Download(url, (file) => {
+        getFileForShare(file);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adHidden]);
+  const downloadVimeo = (_url) => {
+    if (isSanitizedInterstitialAdLoaded()) {
+      setUrl(_url);
+      showAd();
+    } else {
+      if (url === null) {
+        return;
+      }
+      Toast("Download Started", "LONG");
+      hideModal();
+      Download(_url, (file) => {
+        getFileForShare(file);
+      });
+    }
   };
   return (
     <View style={styles.modalContainer}>
@@ -119,6 +142,7 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 5,
     elevation: 10,
     maxHeight: height * 0.7,
+    zIndex: 10000,
   },
   foundMultipleTypeText: {
     fontWeight: "bold",

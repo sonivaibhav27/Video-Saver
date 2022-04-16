@@ -3,21 +3,10 @@ import useAdConsent from "./AdsConsent";
 import { Context } from "../../config";
 import { CustomActivityIndicator, Toast } from "../../common";
 export default ({ children }) => {
-  let ads = useAdConsent();
-  let timeout = React.useRef();
-  React.useEffect(() => {
-    timeout.current = setTimeout(() => {
-      Toast("Please reopen the app, as it is taking more time to load", "LONG");
-    }, 40000);
-    return () => {
-      clearTimeout(timeout.current);
-    };
-  }, []);
-
-  if (ads != null) {
-    clearTimeout(timeout.current);
+  if (true) {
+    // clearTimeout(timeout.current);
     return (
-      <Context.AdsConsentContext.Provider value={ads}>
+      <Context.AdsConsentContext.Provider>
         {children}
       </Context.AdsConsentContext.Provider>
     );

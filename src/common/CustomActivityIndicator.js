@@ -16,8 +16,9 @@ const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFill,
     justifyContent: "center",
-    marginHorizontal: 40,
+    paddingHorizontal: 40,
     borderRadius: 5,
+    // backgroundColor: "rgba(0,0,0,0.3)",
   },
   main: {
     paddingHorizontal: 20,

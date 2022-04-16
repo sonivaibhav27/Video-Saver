@@ -55,10 +55,12 @@ const ShareModal = ({ closeModal, url }) => {
     closeModal();
   };
   const whatsappShare = () => {
+    console.log(url);
     Share.shareSingle({
-      url,
       social: Share.Social.WHATSAPP,
-      forceDialog: true,
+      url,
+      showAppsToView: false,
+      // forceDialog: true,
     })
       .then((value) => {
         console.log(value);

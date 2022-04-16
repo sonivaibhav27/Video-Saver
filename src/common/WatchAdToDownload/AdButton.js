@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 //custom imports
-import { Icons, Download } from "../../utils";
+import { Icons, Download, withTimeout } from "../../utils";
 import useRewardAdsHook from "../../hooks/Ads/useRewardAd";
 import Toast from "../Toast";
 
@@ -22,40 +22,43 @@ const ButtonWithAd = ({
 }) => {
   const [loadingAd, setLoadingAd] = React.useState(false);
   const [downloadingStarted, setDownloadingStarted] = React.useState(false);
-  const [
-    loadAd,
-    showAd,
-    rewardAdEventHandler,
-    getRewardAdInstance,
-  ] = useRewardAdsHook();
-  const instance = React.useRef(getRewardAdInstance(adConsentStatus));
-  console.log({ Ad: adConsentStatus });
+  const [onBtnClicked, setOnBtnClicked] = React.useState(false);
+  const {
+    loadRewardAd,
+    showRewardAd,
+    adEventEmitter,
+    removeAllAdEventListener,
+    isRewardedAdReady,
+  } = useRewardAdsHook();
   const rewardEarned = React.useRef();
   React.useEffect(() => {
-    let eventHandler;
     if (!isPremiumUser) {
-      eventHandler = rewardAdEventHandler(
-        instance.current,
+      adEventEmitter(
         () => {
-          showAd(instance.current);
+          rewardEarned.current = true;
         },
         () => {
-          //User Earned Reward.
+          clearTimeout(timeout);
           setLoadingAd(false);
-          setDownloadingStarted(true);
+          setOnBtnClicked(false);
           downloadVideo();
           if (typeof hideAllDownloadButtons === "function") {
             hideAllDownloadButtons();
           }
-          Toast("Download Started", "LONG");
-          rewardEarned.current = true;
+          rewardEarned.current = false;
         },
         () => {
-          //closed Ad
+          clearTimeout(timeout);
+          if (onBtnClicked) {
+            showRewardAd();
+            setOnBtnClicked(false);
+          }
+        },
+        () => {
+          clearTimeout(timeout);
           setLoadingAd(false);
           if (rewardEarned.current) {
             setLoadingAd(false);
-            setDownloadingStarted(true);
             downloadVideo();
             if (typeof hideAllDownloadButtons === "function") {
               hideAllDownloadButtons();
@@ -63,32 +66,28 @@ const ButtonWithAd = ({
             Toast("Download Started", "LONG");
             rewardEarned.current = false;
           }
-        },
-        () => {
-          //error while loading ad.
-          setLoadingAd(false);
-          setDownloadingStarted(true);
-          downloadVideo();
-          if (typeof hideAllDownloadButtons === "function") {
-            hideAllDownloadButtons();
-          }
-          Toast("Download Started", "LONG");
         }
       );
+      loadRewardAd();
     }
 
-    return () => {
-      if (
-        typeof eventHandler !== "undefined" &&
-        typeof eventHandler === "function"
-      ) {
-        eventHandler();
+    let timeout = withTimeout(() => {
+      //remove ad event handler.
+      setOnBtnClicked(false);
+      if (!downloadingStarted) {
+        downloadVideo();
       }
+    }, 10 * 1000);
+
+    return () => {
+      removeAllAdEventListener();
+      clearTimeout(timeout);
     };
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const downloadVideo = () => {
+    setDownloadingStarted(true);
     Download(
       url,
       (file) => {
@@ -109,7 +108,12 @@ const ButtonWithAd = ({
       downloadVideo();
     } else {
       setLoadingAd(true);
-      loadAd(instance.current);
+      if (isRewardedAdReady()) {
+        // loadRewardAd();
+        showRewardAd();
+      } else {
+        setOnBtnClicked(true);
+      }
     }
   };
   if (showIconOnly) {

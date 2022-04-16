@@ -2,14 +2,14 @@ import React from "react";
 import AppLovinMax from "react-native-applovin-max";
 import { StyleSheet, View } from "react-native";
 
-const BannerID = "6598b7551db825ad";
+const BannerID = "a72a96cf1d4567d5";
 export default ({ show = true, giveTopMargin = true }) => {
   if (show) {
     return (
       <View style={giveTopMargin && styles.align_margin}>
         <AppLovinMax.AdView
           adUnitId={BannerID}
-          adFormat={AppLovinMax.AdFormat.BANNER}
+          adFormat={AppLovinMax.AdFormat.MREC}
           style={styles.banner}
         />
       </View>
@@ -22,7 +22,7 @@ export default ({ show = true, giveTopMargin = true }) => {
 const styles = StyleSheet.create({
   align_margin: { marginTop: 20 },
   banner: {
-    backgroundColor: "#000000",
+    backgroundColor: "#f1f1f1",
     width: "100%",
     height: AppLovinMax.getAdaptiveBannerHeightForWidth(-1),
     alignSelf: "center",

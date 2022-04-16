@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         maven { url 'https://plugins.gradle.org/m2/' } // Gradle Plugin Portal
+
     }
     dependencies {
         classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.12.9, 0.99.99]'
@@ -147,15 +148,15 @@ android {
         applicationId "com.vidownranuja"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 137
-        versionName "6.4.14-release"
+        versionCode 140
+        versionName "6.4.15-release"
         multiDexEnabled true
     }
     splits {
         abi {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
-            universalApk false  // If true, also generate a universal APK
+            universalApk true  // If true, also generate a universal APK
             include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }
@@ -209,7 +210,8 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.applovin.mediation:facebook-adapter:+'
+    implementation 'com.applovin.mediation:ironsource-adapter:+'
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }
@@ -217,14 +219,13 @@ dependencies {
         exclude group:'com.facebook.flipper'
         exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
+    implementation 'com.google.android.exoplayer:exoplayer:2.13.3'
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation'com.facebook.soloader:soloader:0.8.2'
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }
-    implementation 'com.google.android.gms:play-services-ads:20.5.0'
-    implementation 'com.google.ads.mediation:applovin:11.1.0.0'
-    implementation 'com.google.ads.mediation:facebook:6.8.0.0'
-
+    // implementation 'com.google.android.gms:play-services-ads:20.5.0'
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
@@ -252,3 +253,7 @@ project.ext.vectoricons = [
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+apply plugin: 'applovin-quality-service'
+applovin {
+    apiKey "DXSd_14uDJtO0oyDONu_UQSwQn-XU2XcNh_Km0DwzVG7g8snrB_7pBTgtcrpEAQJx8525JaGwraOyAL2PSSBvP"    
+}

@@ -11,12 +11,11 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import RNFetchBlob from "rn-fetch-blob";
 
 //custom imports;
 import { Toast } from "../../../common";
+import { Download } from "../../../utils";
 const { height } = Dimensions.get("window");
-const date = new Date();
 
 if (Platform.OS === "android") {
   UIManager.setLayoutAnimationEnabledExperimental &&
@@ -30,50 +29,29 @@ export default function InstagramMulipleVideoDownloadModal({ videos }) {
     if (!isAll) {
       removeOnceDownload(urls);
     }
-    const fileName =
-      date.toDateString() + date.getMilliseconds() + date.getTime();
+
     !isAll
-      ? RNFetchBlob.config({
-          addAndroidDownloads: {
-            useDownloadManager: true,
-            notification: true,
-            path:
-              RNFetchBlob.fs.dirs.MovieDir +
-              "/Video Saver/" +
-              `${fileName}.mp4`,
+      ? Download(
+          urls,
+          () => {
+            Toast("Successfully Downloaded.");
           },
-        })
-          .fetch("GET", urls, { "Cache-Control": "no-store" })
-          .then((res) => {
-            // the temp file path with file extension `png`
-            Toast(res.path());
-
-            // res.flush(); //removing cached data.
-          })
-          .catch(() => {
-            Toast("Error while downloading video.");
-          })
+          () => {
+            Toast("Error While Downloading Video");
+          }
+        )
       : urls.map((url) => {
-          RNFetchBlob.config({
-            addAndroidDownloads: {
-              useDownloadManager: true,
-              notification: true,
-              path:
-                RNFetchBlob.fs.dirs.MovieDir + "/Vidown/" + `${fileName}.mp4`,
+          Download(
+            url.video,
+            (path) => {
+              Toast(path);
             },
-          })
-            .fetch("GET", url.video, { "Cache-Control": "no-store" })
-            .then(async (res) => {
-              // the temp file path with file extension `png`
-              Toast(res.path());
-              setText("All Downloaded");
-
-              // res.flush(); //removing cached data.
-            })
-            .catch(() => {
-              Toast("Error while downloading video.");
-            });
+            () => {
+              Toast("Error While Downloading Video");
+            }
+          );
         });
+    isAll && setText("All Downloaded");
   }
   const [text, setText] = React.useState("Download All");
   const [video, setVideo] = React.useState(videos);

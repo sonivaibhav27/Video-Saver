@@ -143,9 +143,7 @@ class Twitter extends React.Component {
             />
           </View>
         )}
-        <AdsHook.BannerAd
-          show={this.state.data === null && this.state.file.length === 0}
-        />
+        <AdsHook.ReactangularBannerAd show={this.state.file.length === 0} />
 
         <View style={styles.marginTop} />
         <View style={styles.downloadContainer}>
@@ -192,6 +190,10 @@ class Twitter extends React.Component {
             <CustomActivityIndicator text="loading..." />
           </View>
         )}
+        <AdsHook.BannerAd
+          giveTopMargin={false}
+          show={this.state.file.length === 0}
+        />
       </View>
     );
   }

@@ -1,11 +1,12 @@
-import admob from "react-native-google-mobile-ads";
+import AppLovinMAX from "react-native-applovin-max";
 
-export default async () => {
-  try {
-    const adapter = await admob().initialize();
-    console.log(adapter);
-    // await admob().setRequestConfiguration({
-    //   testDeviceIdentifiers: ['B3EEABB8EE11C2BE770B684D95219ECB', 'EMULATOR'],
-    // });
-  } catch (_) {}
+export default () => {
+  AppLovinMAX.initialize(
+    "Fpa8dG7bbJ_4pw0ahdTrKOH7--Hodnn0iFxTfMFPOm0Qa6kl-atA2QnwTUoPl2RSnywb48izWEQcptDomL1r7T",
+    (configuration) => {
+      // SDK is initialized, start loading ads
+      console.log("Initialize.");
+      // AppLovinMAX.showMediationDebugger();
+    }
+  );
 };

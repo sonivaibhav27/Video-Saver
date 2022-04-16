@@ -10,9 +10,9 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import androidx.multidex.MultiDexApplication;
 import com.rollbar.RollbarReactNative;
 import com.microsoft.codepush.react.CodePush;
+import androidx.multidex.MultiDexApplication;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 

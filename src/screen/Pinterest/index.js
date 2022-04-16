@@ -22,6 +22,7 @@ import { DownloadLocation, Context } from "../../config";
 import { MultipleVideoDownloadModal } from "../Instagram/components";
 import downloadPin from "../../../server/pinterest";
 import { AdsHook } from "../../hooks";
+import { withTimeout } from "../../utils";
 class PrivateVideo extends React.Component {
   constructor() {
     super();
@@ -44,7 +45,7 @@ class PrivateVideo extends React.Component {
   }
 
   componentDidMount() {
-    this._checkifClipboardExists();
+    this.timeout = withTimeout(this._checkifClipboardExists, 0);
   }
 
   _checkifClipboardExists = async () => {
@@ -83,6 +84,7 @@ class PrivateVideo extends React.Component {
     } catch (_) {}
   };
   componentWillUnmount = () => {
+    clearTimeout(this.timeout);
     this._isMount = false;
   };
 
@@ -206,13 +208,7 @@ class PrivateVideo extends React.Component {
               />
             </View>
           )}
-        <AdsHook.BannerAd
-          show={
-            this.state.pinterestResult.url.length === 0 &&
-            Object.keys(this.state.pinUrl).length === 0 &&
-            this.state.file.length === 0
-          }
-        />
+        <AdsHook.ReactangularBannerAd show={this.state.file.length === 0} />
 
         {this.state.pinterestResult.isMultiple && (
           <MultipleVideoDownloadModal videos={this.state.pinterestResult.url} />
@@ -226,16 +222,18 @@ class PrivateVideo extends React.Component {
                 this.state.file.length <= 0 && (
                   <PreviewVideoButton url={this.state.pinUrl.url} />
                 )}
-              <VideoDownloadButton
-                getFileForShare={(filName) => {
-                  this.setState({ file: filName });
-                }}
-                url={
-                  Object.keys(this.state.pinUrl).length > 0
-                    ? this.state.pinUrl.url
-                    : undefined
-                }
-              />
+              {!this.state.pinterestResult.isMultiple && (
+                <VideoDownloadButton
+                  getFileForShare={(filName) => {
+                    this.setState({ file: filName });
+                  }}
+                  url={
+                    Object.keys(this.state.pinUrl).length > 0
+                      ? this.state.pinUrl.url
+                      : undefined
+                  }
+                />
+              )}
             </View>
           </>
         )}
@@ -244,6 +242,10 @@ class PrivateVideo extends React.Component {
             <CustomActivityIndicator text="loading..." />
           </View>
         )}
+        <AdsHook.BannerAd
+          giveTopMargin={false}
+          show={this.state.file.length === 0}
+        />
       </View>
     );
   }

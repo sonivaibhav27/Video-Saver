@@ -24,30 +24,46 @@ class VideoDownloadButton extends React.PureComponent {
     this._isMounted = false;
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.adHidden !== this.props.adHidden && this.props.adHidden) {
+      this.downloadVideo();
+    }
+  }
   checkPermission = () => {
     PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
     )
       .then((granted) => {
         if (granted) {
-          this.downloadVideo();
+          this.showAdOrDownloadVideo();
         } else {
           Toast("Please give storage permission to download.");
         }
       })
       .catch((_) => {
+        console.log(_);
         Toast("Failed to check permssion.");
       });
   };
+
+  showAdOrDownloadVideo = () => {
+    if (this.props.isSanitizedInterstitialAdLoaded()) {
+      this.props.showAd();
+    } else {
+      this.downloadVideo();
+    }
+  };
+
   downloadVideo = async () => {
     if (typeof this.props.url === "undefined") {
       return;
     }
-    if (!this.props.isPremiumUser && this.props.isUserConsentAvaialable) {
-      try {
-        this.props.showAd();
-      } catch (err) {}
-    }
+    // if (!this.props.isPremiumUser && this.props.isUserConsentAvaialable) {
+    //   // try {
+    //   //   this.props.showAd();
+    //   // } catch (err) {}
+    // }
+    Toast("Download Started....", "LONG");
     this.setState({ text: "Downloading..." });
     Download(
       this.props.url,
@@ -111,37 +127,41 @@ const styles = StyleSheet.create({
 });
 
 export default (props) => {
-  const interestialAd = AdsHook.useInterestitialAd();
+  const {
+    adEventCallback,
+    removeAllAdEventListener,
+    isSanitizedInterstitialAdLoaded,
+    loadAd,
+    showAd,
+    adHidden,
+  } = AdsHook.useInterestitialAd();
   const adsConsent = React.useContext(Context.AdsConsentContext);
   React.useEffect(() => {
-    console.log("calling....");
-    let event;
-    if (!props.isPremiumUser && adsConsent != null && adsConsent != 0) {
-      interestialAd.interestitialModifiedForEEA(adsConsent);
-      event = interestialAd.eventHandler(() => {
-        // interestialAd.showAd();
-      });
-      interestialAd.loadAd();
+    // console.log("calling....");
+    // let event;
+    if (!props.isPremiumUser) {
+      adEventCallback();
+      loadAd();
     }
 
     return () => {
-      if (typeof event !== "undefined") {
-        event();
-      }
+      removeAllAdEventListener();
     };
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const showAd = () => {
-    interestialAd.showAd();
-    interestialAd.loadAd();
+  const showInterAd = () => {
+    showAd();
+    loadAd();
   };
 
   return (
     <VideoDownloadButton
       {...props}
       isUserConsentAvaialable={adsConsent != null && adsConsent != 0}
-      showAd={showAd}
+      showAd={showInterAd}
+      adHidden={adHidden}
+      isSanitizedInterstitialAdLoaded={isSanitizedInterstitialAdLoaded}
     />
   );
 };

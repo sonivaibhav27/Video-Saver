@@ -7,21 +7,31 @@ import {
   Linking,
   FlatList,
   Text,
+  Platform,
 } from "react-native";
-
 //custom imports
 import { CustomActivityIndicator, Toast } from "../../common";
-import { getUserWhatsapp, getMediaType } from "./helper";
-import { WhatsappCard } from "./components";
+import {
+  getUserWhatsapp,
+  getMediaType,
+  checkAndroid11PermissionIfNotThenAsked,
+} from "./helper";
+import { Whatsapp11HelperModal, WhatsappCard } from "./components";
 import { Context } from "../../config";
+import { AdsHook } from "../../hooks";
+import AsyncStorage from "@react-native-community/async-storage";
 
 const { height } = Dimensions.get("window");
 
-export default function App({}) {
+export default function App(props) {
   const [status, setStatus] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [dir, setDir] = React.useState("");
   const [share, setSharePress] = React.useState(false);
+  const [
+    showWhatsapp11HelperModal,
+    setShowWhatsapp11HelperModal,
+  ] = React.useState(false);
   const { permission: Permission } = React.useContext(
     Context.StoragePermissionContext
   );
@@ -40,6 +50,25 @@ export default function App({}) {
         setLoading(false);
       });
   };
+
+  const checkForWhatsapp11InAsync = async () => {
+    try {
+      let uri = await AsyncStorage.getItem("whatsapp11uri");
+      console.log(uri);
+      if (uri) {
+        getStatues();
+      } else {
+        setShowWhatsapp11HelperModal(true);
+        setLoading(false);
+      }
+    } catch (err) {}
+  };
+
+  React.useEffect(() => {
+    if (Platform.Version >= 30) {
+      checkForWhatsapp11InAsync();
+    }
+  }, []);
   React.useEffect(() => {
     if (!Permission) {
       Alert.alert(
@@ -56,9 +85,32 @@ export default function App({}) {
       );
     }
     if (Permission) {
-      getStatues();
+      if (Platform.Version < 30) {
+        getStatues();
+      }
     }
   }, [Permission]);
+
+  const onOkPress = (i) => {
+    setLoading(true);
+    try {
+      setShowWhatsapp11HelperModal(false);
+      // return;
+      checkAndroid11PermissionIfNotThenAsked(5)
+        .then((p) => {
+          if (p) {
+            getStatues();
+          }
+        })
+        .catch(() => {});
+    } catch (err) {
+      Toast("Retrying... For Permission");
+    }
+  };
+
+  const onCancelPress = () => {
+    props.navigation.pop();
+  };
 
   const onSharePressed = () => setSharePress(true);
 
@@ -80,13 +132,13 @@ export default function App({}) {
       return null;
     }
   };
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <CustomActivityIndicator text="Loading..." />
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <CustomActivityIndicator text="Loading..." />
+  //     </View>
+  //   );
+  // }
   const getItemLayout = (data, index) => {
     return {
       length: height * 0.3,
@@ -97,7 +149,16 @@ export default function App({}) {
 
   return (
     <View style={styles.container}>
-      {status.length !== 0 ? (
+      {loading ? (
+        <View style={styles.container}>
+          <CustomActivityIndicator text="Loading..." />
+        </View>
+      ) : showWhatsapp11HelperModal ? (
+        <Whatsapp11HelperModal
+          onOkPress={onOkPress}
+          onCancelPress={onCancelPress}
+        />
+      ) : status.length !== 0 ? (
         <FlatList
           data={status}
           renderItem={({ item }) => renderItem(item)}
@@ -116,6 +177,8 @@ export default function App({}) {
           <CustomActivityIndicator text="loading..." />
         </View>
       )}
+
+      <AdsHook.BannerAd />
     </View>
   );
 }

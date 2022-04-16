@@ -10,7 +10,7 @@ import ClipBoard from "@react-native-community/clipboard";
 import AsyncStorage from "@react-native-community/async-storage";
 
 //custom imports;
-import { Icons } from "../../utils";
+import { Icons, withTimeout } from "../../utils";
 import {
   VideoDownloadButton,
   ShareVideo,
@@ -66,7 +66,12 @@ class Facebook extends React.Component {
           if (err.code === 400) {
             this.setState({ showFBLogin: true, loading: false });
           } else {
-            Toast(err.err);
+            if (!this.state.isFacebookLogin) {
+              Toast("Please Login to your facebook to download video.");
+              this.setState({ showFBLogin: true });
+            } else {
+              Toast(err.err);
+            }
             this.setState({ loading: false });
           }
           if (!!err.message) {
@@ -82,7 +87,7 @@ class Facebook extends React.Component {
 
   componentDidMount = () => {
     this._cookie();
-    this.getCLipboardData();
+    this.timeout = withTimeout(this.getCLipboardData);
     // AppState.addEventListener("change", this._handlerAppStateChange);
   };
 
@@ -147,6 +152,7 @@ class Facebook extends React.Component {
   };
 
   componentWillUnmount = () => {
+    clearTimeout(this.timeout);
     this._isMounted = false;
   };
 
@@ -218,9 +224,7 @@ class Facebook extends React.Component {
             />
           </View>
         )}
-        <AdsHook.BannerAd
-          show={data === null && file.length === 0 && !this.state.showFBLogin}
-        />
+        <AdsHook.ReactangularBannerAd show={file.length === 0} />
 
         <View style={styles.spacing} />
         <View style={styles.downloadContainer}>
@@ -272,6 +276,7 @@ class Facebook extends React.Component {
             />
           </View>
         )}
+        <AdsHook.BannerAd giveTopMargin={false} show={file.length === 0} />
       </View>
     );
   }
@@ -325,6 +330,7 @@ const styles = StyleSheet.create({
 export default (props) => {
   const rollbar = React.useContext(Context.RollbarLoggerContext);
   const adsConsent = React.useContext(Context.AdsConsentContext);
+
   return (
     <Facebook {...props} adsConsent={adsConsent} rollbarLogger={rollbar} />
   );

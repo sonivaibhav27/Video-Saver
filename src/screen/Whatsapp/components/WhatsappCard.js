@@ -5,6 +5,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 //custom imports
 import { Icons } from "../../../utils";
@@ -13,6 +14,15 @@ import { Toast } from "../../../common";
 
 const { width, height } = Dimensions.get("window");
 
+function returnPath(dir, item) {
+  if (Platform.Version >= 30) {
+    return (
+      "content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia%2F.Statuses/document/primary%3AAndroid%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia%2F.Statuses%2F" +
+      item
+    );
+  }
+  return `file://${dir}/${item}`;
+}
 export default class WhatsappSection extends PureComponent {
   constructor(props) {
     super(props);
@@ -20,7 +30,7 @@ export default class WhatsappSection extends PureComponent {
   share = async () => {
     this.props.onSharePressed();
     await ShareWhatsappStatus(
-      `file://${this.props.dir}/${this.props.item}`,
+      returnPath(this.props.dir, this.props.item),
       this.props.type
     );
     this.props.shareDone();
@@ -34,12 +44,12 @@ export default class WhatsappSection extends PureComponent {
           {type === "image" ? (
             <Image
               style={styles.imageStyle}
-              source={{ uri: `file://${dir}/${item}` }}
+              source={{ uri: returnPath(dir, item) }}
             />
           ) : (
             <View style={styles.flex}>
               <Image
-                source={{ uri: `file://${dir}/${item}` }}
+                source={{ uri: returnPath(dir, item) }}
                 style={styles.imageStyle}
                 resizeMode="cover"
               />
@@ -61,7 +71,7 @@ export default class WhatsappSection extends PureComponent {
             activeOpacity={0.8}
             onPress={() => {
               saveStatus(
-                `file://${dir}/${item}`,
+                returnPath(dir, item),
                 (destination, error) => {
                   if (error) {
                     Toast("Error: " + error);

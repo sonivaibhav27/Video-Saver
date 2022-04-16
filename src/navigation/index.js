@@ -3,6 +3,7 @@ import React from "react";
 import { PermissionsAndroid, StatusBar } from "react-native";
 import OneSignal from "react-native-onesignal";
 import { NavigationContainer } from "@react-navigation/native";
+import AppLovinMax from "react-native-applovin-max";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-community/async-storage";
 import { Client } from "rollbar-react-native";
@@ -26,10 +27,23 @@ import { Toast } from "../common";
 import { Cookie, QonversionInApp, Splash } from "../utils";
 import { Context, CodePush, Keys } from "../config";
 import { AdsHook } from "../hooks";
+import { UseAdConsent } from "../hooks/Ads";
 
 const Stack = createStackNavigator();
 
-const rollbar = new Client(Keys.Key_Rollbar);
+const rollbar = new Client(Keys.Key_Rollbar, {
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+  appVersion: "6.4.15-release",
+  payload: {
+    client: {
+      javascript: {
+        source_map_enabled: true,
+        codeVersion: "6.4.15-release",
+      },
+    },
+  },
+});
 
 class Navigation extends React.Component {
   constructor(properties) {
@@ -42,6 +56,7 @@ class Navigation extends React.Component {
       loading: true,
       showPermissionScreen: false,
       userIsPremium: false,
+      setStateForConsentForForceFullyReload: null,
     };
   }
 
@@ -55,11 +70,12 @@ class Navigation extends React.Component {
       }
     });
   };
-  _initializeAd = () => {
-    AdsHook.InitializeAd();
+
+  _setState = (obj) => {
+    this.setState({ setStateForConsentForForceFullyReload: obj });
   };
+
   componentDidMount() {
-    this._initializeAd();
     this.clearCookieForFirstTime();
     // this.checkIfUserIsPremium();
     PermissionsAndroid.check(
@@ -110,11 +126,18 @@ class Navigation extends React.Component {
       loading: false,
     });
   };
+
   render() {
     if (this.state.loading) {
       return <Splash />;
     } else if (!this.state.loading && this.state.showPermissionScreen) {
       return <OnBoardPermissionScreen onPress={this.onPress} />;
+    } else if (
+      AppLovinMax.getConsentDialogState() ===
+        AppLovinMax.ConsentDialogState.APPLIES &&
+      !AppLovinMax.hasUserConsent()
+    ) {
+      return <UseAdConsent setState={this._setState} />;
     } else {
       return (
         <AdsHook.AdsProvider>

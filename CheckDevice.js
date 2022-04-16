@@ -1,8 +1,7 @@
 import React from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
-// import Qonversion from "react-native-qonversion";
-
 import { Navigation } from "./src";
+import { InitializeAd } from "./src/hooks/Ads";
 
 // Qonversion.launchWithKey("KeLfiChTvAJ7Xk-w49QVGcMklAlUFqOS", false);
 export default () => {
@@ -19,6 +18,12 @@ export default () => {
   //   }
   // };
 
+  React.useEffect(() => {
+    const a = async () => {
+      InitializeAd();
+    };
+    a();
+  }, []);
   return (
     <View style={styles.flex1}>
       {Platform.OS === "android" ? (

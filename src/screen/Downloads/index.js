@@ -126,8 +126,9 @@ class DownloadsScreen extends Component {
       "Could not get media: need READ_EXTERNAL_STORAGE permission"
     ) {
       Toast("Error , Need Storage Permissions.");
+      return;
     }
-    Toast("Error");
+    Toast("Something went wrong.");
   };
 
   componentDidMount = () => {
@@ -167,7 +168,7 @@ class DownloadsScreen extends Component {
         </View>
         <TouchableOpacity
           onPress={() => {
-            // this.anim.animateNextTransition();
+            this.anim.animateNextTransition();
             this.setState({
               openShare: true,
               fileUrl: item.uri,
@@ -182,9 +183,9 @@ class DownloadsScreen extends Component {
   };
   transition = (
     <Transition.Sequence>
-      <Transition.In type="slide-bottom" />
+      <Transition.In type="fade" />
       <Transition.Change interpolation="linear" />
-      <Transition.Out type="slide-bottom" />
+      <Transition.Out type="fade" />
     </Transition.Sequence>
   );
   closeShare = () => {

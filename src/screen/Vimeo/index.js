@@ -16,6 +16,7 @@ import { PasteLinkInput, Toast, ShareVideo, ActionButtons } from "../../common";
 import { Context, DownloadLocation } from "../../config";
 import { DownloadModalForDifferentVideoResolutions } from "./components";
 import { AdsHook } from "../../hooks";
+import { withTimeout } from "../../utils";
 class Vimeo extends React.Component {
   constructor() {
     super();
@@ -39,9 +40,13 @@ class Vimeo extends React.Component {
   }
 
   componentDidMount() {
-    this.checkForClipboard();
+    this.timeout = withTimeout(this.checkForClipboard);
   }
 
+  componentWillUnmount() {
+    this._isMount = false;
+    clearTimeout(this.timeout);
+  }
   async checkForClipboard() {
     try {
       const hasString = await Clipboard.hasString();
@@ -149,9 +154,7 @@ class Vimeo extends React.Component {
             We are currently supporting only public videos of vimeo platform.
           </Text>
 
-          <AdsHook.BannerAd
-            show={this.state.data.length === 0 && this.state.file.length === 0}
-          />
+          <AdsHook.ReactangularBannerAd show={this.state.file.length === 0} />
 
           {this.state.file.length > 0 && (
             <View style={styles.align_margin}>
@@ -167,12 +170,16 @@ class Vimeo extends React.Component {
             this.state.show &&
             this.state.file.length === 0 && (
               <DownloadModalForDifferentVideoResolutions
+                adHidden={this.props.adHidden}
                 showAd={this.props.showAd}
                 adsConsentStatus={this.props.adsConsent}
                 data={this.state.data}
                 hideModal={this.hideModal}
                 posterImage={this.state.image}
                 isPremiumUser={this.props.isPremiumUser}
+                isSanitizedInterstitialAdLoaded={
+                  this.props.isSanitizedInterstitialAdLoaded
+                }
                 getFileForShare={(file) => {
                   if (this._isMount) {
                     this.setState({ file });
@@ -180,6 +187,8 @@ class Vimeo extends React.Component {
                 }}
               />
             )}
+
+          <AdsHook.BannerAd show={this.state.file.length === 0} />
         </View>
       </Transitioning.View>
     );
@@ -188,34 +197,34 @@ class Vimeo extends React.Component {
 
 export default (props) => {
   const rollbar = React.useContext(Context.RollbarLoggerContext);
-  const adsConsent = React.useContext(Context.AdsConsentContext);
+  // const adsConsent = React.useContext(Context.AdsConsentContext);
   const interestialAd = AdsHook.useInterestitialAd();
   React.useEffect(() => {
-    let event;
-    if (!props.isPremiumUser && adsConsent != null && adsConsent !== 0) {
-      interestialAd.interestitialModifiedForEEA(adsConsent);
-      event = interestialAd.eventHandler(() => {
-        // interestialAd.showAd();
-      });
-      interestialAd.loadAd();
+    if (!props.isPremiumUser) {
+      interestialAd.adEventCallback();
     }
-
+    interestialAd.loadAd();
     return () => {
-      if (typeof event !== "undefined") {
-        event();
-      }
+      interestialAd.removeAllAdEventListener();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const showAd = () => {
-    interestialAd.showAd();
+    if (interestialAd.isSanitizedInterstitialAdLoaded()) {
+      interestialAd.showAd();
+    }
+    interestialAd.loadAd();
   };
   return (
     <Vimeo
       {...props}
+      adHidden={interestialAd.adHidden}
       showAd={showAd}
-      adsConsent={adsConsent}
+      adsConsent={1}
       rollbarLogger={rollbar}
+      isSanitizedInterstitialAdLoaded={
+        interestialAd.isSanitizedInterstitialAdLoaded
+      }
     />
   );
 };

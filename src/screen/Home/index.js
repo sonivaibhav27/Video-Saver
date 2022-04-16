@@ -71,7 +71,7 @@ export default function App({ navigation, isPremiumUser }) {
         </View>
       </View>
       <View style={styles.adBanner}>
-        <AdsHook.BannerAd />
+        <AdsHook.BannerAd giveTopMargin={false} />
       </View>
     </View>
   );

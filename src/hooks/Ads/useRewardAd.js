@@ -1,80 +1,89 @@
-import {
-  AdEventType,
-  AdsConsentStatus,
-  RewardedAd,
-  RewardedAdEventType,
-  TestIds,
-} from "react-native-google-mobile-ads";
+import AppLovinMAX from "react-native-applovin-max";
 
-//custom imports
-import { Toast } from "../../common";
-// const AdsId = "ca-app-pub-2540765935808056~2490457734";
-const AdsId = __DEV__
-  ? TestIds.REWARDED
-  : "ca-app-pub-2540765935808056/8558563633";
-
-const useRewardAdsHook = () => {
-  const eventHandler = (
-    rewardAd,
-    setLoadCallback,
-    rewardEarnedCallback,
-    closeAdCallback,
-    errorCallback
-  ) => {
-    const event = rewardAd.onAdEvent((type, error) => {
-      if (error) {
-        console.log(error);
-        Toast("Can't load the ad now, please try again.");
-        if (typeof errorCallback === "function") {
-          errorCallback();
-        }
-      }
-      if (type === RewardedAdEventType.LOADED) {
-        if (typeof setLoadCallback === "function") {
-          setLoadCallback();
-        }
-      }
-      if (type === AdEventType.CLICKED) {
-        console.log("Clicked");
-      }
-
-      if (type === RewardedAdEventType.EARNED_REWARD) {
-        if (typeof rewardEarnedCallback === "function") {
-          rewardEarnedCallback();
-        }
-      }
-      if (type === AdEventType.CLOSED) {
-        if (typeof closeAdCallback === "function") {
-          closeAdCallback();
-        }
-      }
-    });
-    return event;
-  };
-
-  const getRewardAdInstance = (nonPersonalized) => {
-    return RewardedAd.createForAdRequest(AdsId, {
-      requestNonPersonalizedAdsOnly:
-        AdsConsentStatus.NON_PERSONALIZED === nonPersonalized,
-    });
-  };
-
-  const loadAd = (rewardAd) => {
-    rewardAd.load();
-  };
-
-  const showAd = (rewardAd) => {
-    rewardAd.show();
-  };
-
-  //if we return as this , then it will be call on each render , so we will call this hook everytime and everytime , useEffect will be called, so return memoize callback
-
-  //or scope issue
-  //DIDN'T RUN
-  //   return [loaded, rewarded.show];
-
-  //return rewarded object instead or callback , IT RUN.
-  return [loadAd, showAd, eventHandler, getRewardAdInstance];
+const eventSubscriptions = {
+  adLoadedEventListener: null,
+  adRewardAdEarned: null,
+  adLoadFailedEventListener: null,
+  adFailedToDisplayEventListener: null,
+  adHiddentEventCallback: null,
 };
 
-export default useRewardAdsHook;
+const RewardedAdID = "c16bd5d04b23f209";
+const RewardedAds = () => {
+  const adEventEmitter = (
+    onRewardEarnedCallback,
+    onErrorCallback,
+    onAdLoadedCallback,
+    onAdHiddenCallback
+  ) => {
+    eventSubscriptions.adLoadFailedEventListener = AppLovinMAX.addEventListener(
+      "OnRewardedAdLoadFailedEvent",
+      () => {
+        // Rewarded ad failed to load
+        // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
+        onErrorCallback();
+      }
+    );
+    eventSubscriptions.adFailedToDisplayEventListener = AppLovinMAX.addEventListener(
+      "OnRewardedAdFailedToDisplayEvent",
+      () => {
+        // Rewarded ad failed to display. We recommend loading the next ad
+        onErrorCallback();
+      }
+    );
+
+    eventSubscriptions.adRewardAdEarned = AppLovinMAX.addEventListener(
+      "OnRewardedAdReceivedRewardEvent",
+      () => {
+        // Rewarded ad was displayed and user should receive the reward
+        onRewardEarnedCallback();
+      }
+    );
+    eventSubscriptions.adLoadedEventListener = AppLovinMAX.addEventListener(
+      "OnRewardedAdLoadedEvent",
+      () => {
+        console.log("Reward ad loaded");
+        onAdLoadedCallback();
+      }
+    );
+    eventSubscriptions.adHiddentEventCallback = AppLovinMAX.addEventListener(
+      "OnRewardedAdHiddenEvent",
+      () => {
+        onAdHiddenCallback();
+      }
+    );
+  };
+  const removeAllAdEventListener = () => {
+    const notNullEventSubscriptions = Object.keys(eventSubscriptions).filter(
+      (event) => eventSubscriptions[event] !== null
+    );
+    notNullEventSubscriptions.forEach((activeListener) => {
+      eventSubscriptions[activeListener].remove();
+      eventSubscriptions[activeListener] = null;
+    });
+  };
+
+  const loadRewardAd = () => {
+    AppLovinMAX.loadRewardedAd(RewardedAdID);
+  };
+  const showRewardAd = () => {
+    if (AppLovinMAX.isRewardedAdReady(RewardedAdID)) {
+      AppLovinMAX.showRewardedAd(RewardedAdID);
+    }
+  };
+
+  const isRewardedAdReady = () => {
+    return AppLovinMAX.isRewardedAdReady(RewardedAdID);
+    //   AppLovinMAX.showRewardedAd(RewardedAdID);
+    // }
+  };
+  return {
+    loadRewardAd,
+    showRewardAd,
+    removeAllAdEventListener,
+    adEventEmitter,
+    isRewardedAdReady,
+  };
+};
+
+export default RewardedAds;

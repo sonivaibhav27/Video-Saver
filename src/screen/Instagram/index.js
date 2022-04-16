@@ -4,7 +4,7 @@ import WebView from "react-native-webview";
 import Clipboard from "@react-native-community/clipboard";
 
 //custom imports
-import { Icons } from "../../utils";
+import { Icons, withTimeout } from "../../utils";
 import {
   PasteLinkInput,
   CustomActivityIndicator,
@@ -21,6 +21,7 @@ import {
 import { Cookie } from "../../utils";
 import { Context, DownloadLocation } from "../../config";
 import { AdsHook } from "../../hooks";
+import { clearCookie } from "../../utils/Cookie";
 
 // export const UserAgent = [
 //   "Mozilla/5.0 (Linux; Android 9; SM-A102U Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.136 Mobile Safari/537.36 Instagram 155.0.0.37.107 Android (28/9; 320dpi; 720x1468; samsung; SM-A102U; a10e; exynos7885; en_US; 239490550)",
@@ -63,7 +64,7 @@ class Instagram extends Component {
   }
 
   componentDidMount() {
-    this.isItemAvailable();
+    this.timeout = withTimeout(this.isItemAvailable);
     this._cookie();
   }
   onChangeText = (e) => this.setState({ instaLink: e });
@@ -138,6 +139,7 @@ class Instagram extends Component {
   };
 
   componentWillUnmount() {
+    clearTimeout(this.timeout);
     this._isMount = false;
   }
 
@@ -296,7 +298,7 @@ class Instagram extends Component {
           .catch((err) => {
             if (err.message === "JSON Parse error: Unrecognized token '<'") {
               if (this._isMount) {
-                if (!this.state.showLoginButton) {
+                if (this.state.showLoginButton) {
                   Toast(
                     "You need to login to view this content as per the instagram official requirments."
                   );
@@ -312,8 +314,14 @@ class Instagram extends Component {
               this.setState({ isDataArrive: false });
               return;
             } else {
-              console.log(err);
-              Toast("Something went wrong.");
+              if (this.state.showLoginButton) {
+                Toast(
+                  "You need to login to view this content as per the instagram official requirments."
+                );
+                this.setState({
+                  showInstaWarning: true,
+                });
+              }
             }
             this.setState({ isDataArrive: false });
             this.props.rollbarLogger.debug(
@@ -420,13 +428,8 @@ class Instagram extends Component {
           </React.Fragment>
         )}
 
-        <AdsHook.BannerAd
-          show={
-            this.state.instagramResult.url.length === 0 &&
-            !this.state.showInstaWarning &&
-            !this.state.showInstaLogin &&
-            this.state.file.length === 0
-          }
+        <AdsHook.ReactangularBannerAd
+          show={!this.state.showInstaLogin && this.state.file.length === 0}
         />
 
         {this.state.showInstaLogin && (
@@ -503,6 +506,9 @@ class Instagram extends Component {
             <CustomActivityIndicator text="loading..." />
           </View>
         )}
+        <AdsHook.BannerAd
+          show={!this.state.showInstaLogin && this.state.file.length === 0}
+        />
       </View>
     );
   }
@@ -553,7 +559,7 @@ const styles = StyleSheet.create({
   },
   absolute: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: "rgba(0,0,0,1)",
   },
   loginWithInstaText: {
     fontSize: 18,
