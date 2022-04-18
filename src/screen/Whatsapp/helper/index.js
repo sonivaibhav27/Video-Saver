@@ -135,6 +135,7 @@ const status_dir = [
   WhatsappTypes.WHATSAPP_STATUS_PATH,
   WhatsappTypes.GBWHATSAPP_STATUS_PATH,
   WhatsappTypes.WHATSAPP_BUSINESS_STATUS_PATH,
+  WhatsappTypes.WHATSAPP_STATUS_ANDROID_11,
 ];
 //eslint-disable-next-line no-extend-native
 Array.prototype.contains = function (element) {
@@ -239,7 +240,7 @@ export async function getUserWhatsapp() {
       // Make this call in Splash Screen.TODO
       let isExists = false;
       for (let dir of status_dir) {
-        RNFetchBlob.fs.exists(dir).then(async (exist) => {
+        await RNFetchBlob.fs.exists(dir).then(async (exist) => {
           if (exist) {
             console.log("Exist => ", dir);
             await RNFetchBlob.fs
@@ -315,7 +316,12 @@ export const saveStatus = async (paths, callback, type) => {
 export async function ShareWhatsappStatus(file, ext) {
   try {
     console.log(file);
-    const base64 = await readFile(file, "base64");
+    let base64;
+    if (Platform.Version >= 30) {
+      base64 = await readFile(file, "base64");
+    } else {
+      base64 = await RNFetchBlob.fs.readFile(file, "base64");
+    }
     if (ext === "video") {
       await Share.open({
         url: `data:video/mp4;base64,${base64}`,

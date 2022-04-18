@@ -34,12 +34,12 @@ const Stack = createStackNavigator();
 const rollbar = new Client(Keys.Key_Rollbar, {
   captureUncaught: true,
   captureUnhandledRejections: true,
-  appVersion: "6.4.15-release",
+  appVersion: "6.4.16-release",
   payload: {
     client: {
       javascript: {
         source_map_enabled: true,
-        codeVersion: "6.4.15-release",
+        codeVersion: "6.4.16-release",
       },
     },
   },
