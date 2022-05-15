@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     maxWidth: 350,
     borderColor: "rgba(0, 171, 102, 1)",
     borderWidth: 1,
+    backgroundColor: "#FFFFFF",
   },
   text: {
     fontSize: 20,

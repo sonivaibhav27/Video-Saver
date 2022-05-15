@@ -3,7 +3,7 @@
 import * as React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { AdsHook } from "../../hooks";
-
+import { Titles } from "../../config";
 //custom imports;
 import { DownloadButton, Header, IconButton } from "./components";
 
@@ -18,40 +18,40 @@ export default function App({ navigation, isPremiumUser }) {
             onPress={() => {
               navigation.navigate("instagram");
             }}
-            label="instagram"
+            label={Titles.Instagram}
             iconName="instagram"
           />
           <IconButton
-            backgroundColor="#4267B2"
+            backgroundColor="#1877F2"
             onPress={() => {
               navigation.navigate("facebook");
             }}
-            iconName="facebook-f"
-            label="facebook"
+            iconName="Facebook"
+            label={Titles.Facebook}
           />
           <IconButton
             backgroundColor="#1DA1F2"
             onPress={() => {
               navigation.navigate("twitter");
             }}
-            iconName="twitter"
-            label="twitter"
+            iconName="Twitter"
+            label={Titles.Twitter}
           />
           <IconButton
             onPress={() => {
               navigation.navigate("whatsapp");
             }}
             iconName="whatsapp"
-            backgroundColor="#075e54"
-            label="whatsapp"
+            backgroundColor="#215C54"
+            label={Titles.Whatsapp}
           />
           <IconButton
             onPress={() => {
               navigation.navigate("pinterest");
             }}
             backgroundColor="#fe3534"
-            label="pinterest"
-            iconName="pinterest"
+            label={Titles.Pinterest}
+            iconName="pinterest-with-circle"
           />
           <IconButton
             onPress={() => {
@@ -59,7 +59,7 @@ export default function App({ navigation, isPremiumUser }) {
             }}
             backgroundColor="#00adef"
             iconName="vimeo"
-            label="vimeo"
+            label={Titles.Vimeo}
           />
         </View>
         <DownloadButton />

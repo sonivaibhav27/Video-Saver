@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 //custom imports
 import { HelpPage, Button } from "./components";
 import { Icons } from "../../utils";
+import { Titles } from "../../config";
 
 const CopyLinkData = {
   facebook: {
@@ -27,10 +28,12 @@ const CopyLinkData = {
 
 const HelpScreen = () => {
   const [data, setData] = React.useState(null);
+  const [pageTitle, setPageTitle] = React.useState("");
   const navigation = useNavigation();
   const [showModal, setShowModal] = React.useState(false);
-  const onPress = React.useCallback((label) => {
+  const onPress = React.useCallback((label, title) => {
     setData(CopyLinkData[label]);
+    setPageTitle(title);
     setShowModal(true);
   }, []);
   const closeModalHandler = React.useCallback(() => {
@@ -56,11 +59,17 @@ const HelpScreen = () => {
         </TouchableOpacity>
         <Text style={styles.helpText}>How to copy link?</Text>
       </View>
-      <Button onPress={onPress} label="instagram" />
-      <Button onPress={onPress} label="facebook" />
-      <Button onPress={onPress} label="pinterest" />
-      <Button onPress={onPress} label="twitter" />
-      {showModal && <HelpPage data={data} closeModal={closeModalHandler} />}
+      <Button onPress={onPress} label="instagram" title={Titles.Instagram} />
+      <Button onPress={onPress} label="facebook" title={Titles.Facebook} />
+      <Button onPress={onPress} label="pinterest" title={Titles.Pinterest} />
+      <Button onPress={onPress} label="twitter" title={Titles.Twitter} />
+      {showModal && (
+        <HelpPage
+          pageTitle={pageTitle}
+          data={data}
+          closeModal={closeModalHandler}
+        />
+      )}
     </View>
   );
 };

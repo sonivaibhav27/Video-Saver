@@ -15,7 +15,7 @@ import Section from "./Section";
 
 const { height } = Dimensions.get("window");
 
-const HelpPage = ({ data, closeModal }) => {
+const HelpPage = ({ data, closeModal, pageTitle }) => {
   const animated = React.useRef(new Animated.Value(0)).current;
   console.log(data.image);
   React.useEffect(() => {
@@ -55,7 +55,7 @@ const HelpPage = ({ data, closeModal }) => {
       ]}
     >
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>{`${data.name}`} Help</Text>
+        <Text style={styles.headerText}>{pageTitle} Help</Text>
         <TouchableOpacity
           onPress={_closeModal}
           activeOpacity={0.8}

@@ -102,7 +102,8 @@ class VideoDownloadButton extends React.PureComponent {
           styles.container,
           // eslint-disable-next-line  react-native/no-inline-styles
           {
-            backgroundColor: this.props.url === undefined ? "#fff" : "#333",
+            backgroundColor:
+              this.props.url === undefined ? "transparent" : "#333",
           },
         ]}
       >

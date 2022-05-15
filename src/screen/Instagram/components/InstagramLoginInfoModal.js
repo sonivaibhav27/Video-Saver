@@ -14,12 +14,12 @@ const { height } = Dimensions.get("window");
 const InstagramLoginInfoModal = ({ onPress, cancelLogin }) => (
   <View style={styles.instaWarningContainer}>
     <Text style={styles.instaText}>
-      We never save your Instagram username and password, you will be redirected
-      to Instagram OFFICIAL login page.
+      We never save your username and password, you will be redirected to
+      OFFICIAL login page.
     </Text>
     <View style={styles.actionContainer}>
       <TouchableOpacity onPress={onPress} style={styles.instaBtnContainer}>
-        <Icons.AntDesign name="instagram" size={30} color="#fff" />
+        {/* <Icons.AntDesign name="instagram" size={30} color="#fff" /> */}
         <Text style={styles.loginText}>Continue to login</Text>
       </TouchableOpacity>
       <TouchableOpacity

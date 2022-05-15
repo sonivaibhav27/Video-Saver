@@ -16,28 +16,41 @@ const { width, height } = Dimensions.get("window");
 const ICON_SIZE = 35;
 
 function returnIconBasedOnLabel(label, iconName) {
-  switch (label) {
-    case "facebook":
-    case "whatsapp":
-      return (
-        <Icons.FontAwesome name={iconName} size={ICON_SIZE} color={"#fff"} />
-      );
+  switch (iconName) {
+    // case "facebook":
+    //   return (
+    //     <Icons.MaterialCommunityIcons
+    //       name={iconName}
+    //       size={ICON_SIZE}
+    //       color={"#FFF"}
+    //     />
+    //   );
+    // case "WhatsApp":
+    //   return (
+    //     <Icons.FontAwesome name={iconName} size={ICON_SIZE} color={"#fff"} />
+    //   );
     case "instagram":
       return (
         <LinearGradient
           colors={["#5851db", "#833ab4", "#c13584", "#e1306c", "#fd1d1d"]}
           style={styles.common}
         >
-          <Icons.AntDesign name="instagram" size={ICON_SIZE} color={"#fff"} />
+          {/* <Icons.AntDesign name="instagram" size={ICON_SIZE} color={"#fff"} /> */}
           <Text style={styles.text}>{label}</Text>
         </LinearGradient>
       );
-    default:
-      return <Icons.Entypo name={iconName} size={ICON_SIZE} color={"#fff"} />;
+    // default:
+    //   return <Icons.Entypo name={iconName} size={ICON_SIZE} color={"#fff"} />;
   }
 }
 
-const IconButton = ({ onPress, backgroundColor, label, iconName }) => {
+const IconButton = ({
+  onPress,
+  backgroundColor,
+  label,
+  iconName,
+  textColor,
+}) => {
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -53,7 +66,7 @@ const IconButton = ({ onPress, backgroundColor, label, iconName }) => {
         ]}
       >
         {returnIconBasedOnLabel(label, iconName)}
-        {label !== "instagram" && <Text style={styles.text}>{label}</Text>}
+        {iconName !== "instagram" && <Text style={styles.text}>{label}</Text>}
       </View>
     </TouchableOpacity>
   );
@@ -75,8 +88,10 @@ const styles = StyleSheet.create({
   text: {
     color: "#fff",
     fontSize: 15,
+    // textTransform: "capitalize",
     fontWeight: "700",
-    fontStyle: "italic",
+    // marginTop: 10,
+    // fontStyle: "italic",
   },
 });
 export default IconButton;

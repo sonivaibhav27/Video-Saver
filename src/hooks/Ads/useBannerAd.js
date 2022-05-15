@@ -6,7 +6,7 @@ const BannerID = "6598b7551db825ad";
 export default ({ show = true, giveTopMargin = true }) => {
   if (show) {
     return (
-      <View style={giveTopMargin && styles.align_margin}>
+      <View style={[styles.contain, giveTopMargin && styles.align_margin]}>
         <AppLovinMax.AdView
           adUnitId={BannerID}
           adFormat={AppLovinMax.AdFormat.BANNER}
@@ -26,5 +26,8 @@ const styles = StyleSheet.create({
     width: "100%",
     height: AppLovinMax.getAdaptiveBannerHeightForWidth(-1),
     alignSelf: "center",
+  },
+  contain: {
+    zIndex: -10,
   },
 });

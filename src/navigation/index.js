@@ -25,7 +25,7 @@ import {
 } from "../screen";
 import { Toast } from "../common";
 import { Cookie, QonversionInApp, Splash } from "../utils";
-import { Context, CodePush, Keys } from "../config";
+import { Context, CodePush, Keys, Titles } from "../config";
 import { AdsHook } from "../hooks";
 import { UseAdConsent } from "../hooks/Ads";
 
@@ -178,7 +178,7 @@ class Navigation extends React.Component {
                   <Stack.Screen
                     name="facebook"
                     options={{
-                      headerTitle: "Facebook",
+                      headerTitle: Titles.Facebook,
                     }}
                   >
                     {(initialsProps) => (
@@ -191,7 +191,7 @@ class Navigation extends React.Component {
                   <Stack.Screen
                     name="twitter"
                     options={{
-                      headerTitle: "Twitter",
+                      headerTitle: Titles.Twitter,
                     }}
                   >
                     {(initialsProps) => (
@@ -204,7 +204,7 @@ class Navigation extends React.Component {
                   <Stack.Screen
                     name="instagram"
                     options={{
-                      headerTitle: "Instagram",
+                      headerTitle: Titles.Instagram,
                     }}
                   >
                     {(initialsProps) => (
@@ -217,7 +217,7 @@ class Navigation extends React.Component {
                   <Stack.Screen
                     name="pinterest"
                     options={{
-                      headerTitle: "Pinterest",
+                      headerTitle: Titles.Pinterest,
                     }}
                   >
                     {(initialsProps) => (
@@ -230,7 +230,7 @@ class Navigation extends React.Component {
                   <Stack.Screen
                     name="vimeo"
                     options={{
-                      headerTitle: "Vimeo",
+                      headerTitle: Titles.Vimeo,
                     }}
                   >
                     {(initialsProps) => (
@@ -244,7 +244,7 @@ class Navigation extends React.Component {
                   <Stack.Screen
                     name="whatsapp"
                     options={{
-                      headerTitle: "Whatsapp",
+                      headerTitle: Titles.Whatsapp,
                       headerTitleStyle: {
                         marginLeft: -10,
                       },

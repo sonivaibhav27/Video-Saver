@@ -11,10 +11,10 @@
     "lint": "eslint .",
     "release": "react-native run-android --variant=release",
     "restart": "adb reverse tcp:8081 tcp:8081",
-    "update": "appcenter codepush release-react -a vidowndownload-gmail.com/Vidown -m -d Production  --target-binary-version \"6.4.16-dev\" --description \"Android 10 problem\"",
+    "update": "appcenter codepush release-react -a vidowndownload-gmail.com/Vidown -m -d Production  --target-binary-version \"6.4.16-release\" --description \"Ads zIndex so that content appear over it.\"",
     "bundleRelease":"cd android && ./gradlew clean && ./gradlew bundleRelease && cd .. && yarn sourceMap && yarn uploadSourceMap",
     "sourceMap": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output index.android.bundle --sourcemap-output sourcemap.android.js.map --sourcemap-sources-root ./",
-    "uploadSourceMap": "curl https://api.rollbar.com/api/1/sourcemap -F access_token=a5599896ff7644e280f6ae4a500cb55e -F version=6.4.16-release.android -F minified_url=http://reactnativehost/index.android.bundle -F source_map=@sourcemap.android.js.map -F index.js=@index.js  && rm  index.android.bundle && rm sourcemap.android.js.map"
+    "uploadSourceMap": "curl https://api.rollbar.com/api/1/sourcemap -F access_token=a5599896ff7644e280f6ae4a500cb55e -F version=6.4.17-dev.android -F minified_url=http://reactnativehost/index.android.bundle -F source_map=@sourcemap.android.js.map -F index.js=@index.js  && rm  index.android.bundle && rm sourcemap.android.js.map"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",

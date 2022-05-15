@@ -413,11 +413,11 @@ class Instagram extends Component {
                         styles.loginWithInstaButtonContainer,
                       ]}
                     >
-                      <Icons.AntDesign
+                      {/* <Icons.AntDesign
                         name="instagram"
                         size={30}
                         color="#000"
-                      />
+                      /> */}
                       <Text style={styles.loginWithInstaText}>
                         Login with Insta
                       </Text>
